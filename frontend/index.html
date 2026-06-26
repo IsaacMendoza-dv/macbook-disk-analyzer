@@ -19,15 +19,16 @@
       <span class="dot"></span>
       <span class="label">agent disconnected</span>
     </div>
+    <button id="lang-toggle" style="margin-left:12px; font-size:11px;">🌐 EN</button>
   </header>
 
   <!-- Sidebar -->
   <nav id="nav">
-    <a href="#" data-view="welcome" class="active">~ home</a>
-    <a href="#" data-view="dashboard">dashboard</a>
-    <a href="#" data-view="filetree">file tree</a>
-    <a href="#" data-view="scanner">scanner</a>
-    <a href="#" data-view="cleaner">cleaner</a>
+    <a href="#" data-view="welcome" class="active">~ inicio</a>
+    <a href="#" data-view="dashboard">resumen</a>
+    <a href="#" data-view="filetree">árbol</a>
+    <a href="#" data-view="scanner">escáner</a>
+    <a href="#" data-view="cleaner">limpieza</a>
   </nav>
 
   <!-- Main content -->
@@ -49,55 +50,82 @@
         <span id="welcome-text"></span>
         <span class="cursor"></span>
       </div>
-      <div id="agent-install" style="display:none; margin-top:24px;">
-        <p class="muted">Agent not detected. Run in your Mac terminal:</p>
-        <br>
-        <code style="color:var(--accent)">cd agent &amp;&amp; npm install &amp;&amp; node server.js</code>
+
+      <!-- Agent install instructions -->
+      <div id="agent-install" style="display:none; margin-top:28px;">
+        <p class="install-title warn" style="margin-bottom:12px;"></p>
+        <ol style="list-style:none; display:flex; flex-direction:column; gap:8px; color:var(--text);">
+          <li class="install-step"></li>
+          <li class="install-step"></li>
+          <li class="install-step"></li>
+        </ol>
+        <div style="margin:12px 0 8px; background:var(--surface); border:1px solid var(--border); padding:10px 16px;">
+          <code id="install-cmd" style="color:var(--accent)">cd agent &amp;&amp; npm install &amp;&amp; node server.js</code>
+        </div>
+        <p class="install-note muted"></p>
       </div>
     </div>
 
     <!-- Dashboard -->
     <div id="view-dashboard" class="view">
-      <p class="section-title">Disk Overview</p>
+      <p id="title-dashboard" class="section-title">Resumen del Disco</p>
       <div id="disk-card" class="disk-card">
         <div class="disk-nums">
-          <div class="num-block"><span class="num-label">total</span><span class="num-value" id="d-total">—</span></div>
-          <div class="num-block"><span class="num-label">used</span><span class="num-value warn" id="d-used">—</span></div>
-          <div class="num-block"><span class="num-label">free</span><span class="num-value accent" id="d-free">—</span></div>
+          <div class="num-block">
+            <span id="label-total" class="num-label">total</span>
+            <span class="num-value" id="d-total">—</span>
+          </div>
+          <div class="num-block">
+            <span id="label-used" class="num-label">usado</span>
+            <span class="num-value warn" id="d-used">—</span>
+          </div>
+          <div class="num-block">
+            <span id="label-free" class="num-label">libre</span>
+            <span class="num-value accent" id="d-free">—</span>
+          </div>
         </div>
         <div id="d-bar"></div>
       </div>
-      <p class="section-title">Top Directories</p>
+      <p id="title-dirs" class="section-title">Directorios Más Pesados</p>
       <div id="d-dirs"></div>
     </div>
 
     <!-- File Tree -->
     <div id="view-filetree" class="view">
-      <p class="section-title">File Tree</p>
+      <p id="title-filetree" class="section-title">Árbol de Archivos</p>
+      <p id="hint-filetree" class="muted" style="font-size:11px; margin-bottom:16px;"></p>
       <div id="tree-root" class="tree"></div>
     </div>
 
     <!-- Scanner -->
     <div id="view-scanner" class="view">
-      <p class="section-title">Junk Scanner</p>
+      <p id="title-scanner" class="section-title">Escáner de Basura</p>
+      <p id="hint-scanner" class="muted" style="font-size:11px; margin-bottom:14px;"></p>
       <div style="margin-bottom:16px; display:flex; gap:10px;">
-        <button id="btn-scan">[ SCAN DISK ]</button>
-        <button id="btn-junk">[ DETECT JUNK ]</button>
+        <button id="btn-scan">[ ESCANEAR DISCO ]</button>
+        <button id="btn-junk">[ DETECTAR BASURA ]</button>
       </div>
       <table class="junk-table">
-        <thead><tr><th>category</th><th>path</th><th style="text-align:right">size</th></tr></thead>
+        <thead>
+          <tr>
+            <th id="th-category">categoría</th>
+            <th id="th-path">ruta</th>
+            <th id="th-size" style="text-align:right">tamaño</th>
+          </tr>
+        </thead>
         <tbody id="junk-tbody"></tbody>
       </table>
     </div>
 
     <!-- Cleaner -->
     <div id="view-cleaner" class="view">
-      <p class="section-title">Cleaner</p>
+      <p id="title-cleaner" class="section-title">Limpieza</p>
+      <p id="hint-cleaner" class="muted" style="font-size:11px; margin-bottom:14px;"></p>
       <div id="clean-list" class="clean-list"></div>
       <div class="clean-summary">
-        <span class="selected-info" id="clean-count">0 items selected</span>
+        <span class="selected-info" id="clean-count" data-count="0">0 elementos seleccionados</span>
         <span class="freed-info" id="clean-freed"></span>
-        <button id="btn-clean" class="danger" style="margin-left:auto">[ DELETE SELECTED ]</button>
+        <button id="btn-clean" class="danger" style="margin-left:auto">[ ELIMINAR SELECCIONADOS ]</button>
       </div>
     </div>
 
@@ -105,11 +133,12 @@
 
   <!-- Terminal log -->
   <div id="log-panel">
-    <div class="log-line muted">macdisk-analyzer ready.</div>
+    <div class="log-line muted" id="log-ready">macdisk-analyzer listo.</div>
   </div>
 
 </div>
 
+<script src="js/i18n.js"></script>
 <script src="js/terminal.js"></script>
 <script src="js/dashboard.js"></script>
 <script src="js/filetree.js"></script>

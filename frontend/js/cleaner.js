@@ -18,9 +18,14 @@ function renderCleanerList(items) {
 
 function updateSummary() {
   const checked = [...document.querySelectorAll('#clean-list input:checked')];
-  const total = checked.reduce((s, el) => s + Number(el.dataset.size), 0);
-  document.getElementById('clean-count').textContent = `${checked.length} items selected`;
-  document.getElementById('clean-freed').textContent = checked.length ? `~${fmtBytes(total)} to free` : '';
+  const total   = checked.reduce((s, el) => s + Number(el.dataset.size), 0);
+  const countEl = document.getElementById('clean-count');
+  countEl.dataset.count = checked.length;
+  countEl.textContent = checked.length
+    ? `${checked.length} ${currentLang === 'es' ? 'elementos seleccionados' : 'items selected'}`
+    : t('clean_none');
+  document.getElementById('clean-freed').textContent =
+    checked.length ? `~${fmtBytes(total)} ${currentLang === 'es' ? 'a liberar' : 'to free'}` : '';
 }
 
 document.getElementById('btn-clean').addEventListener('click', () => {
@@ -30,10 +35,10 @@ document.getElementById('btn-clean').addEventListener('click', () => {
   const paths = checked.flatMap(el => el.dataset.path.split('|').filter(Boolean));
   const total = checked.reduce((s, el) => s + Number(el.dataset.size), 0);
 
-  if (!confirm(`Delete ${checked.length} item(s)?\n~${fmtBytes(total)} will be freed.\n\nThis cannot be undone.`)) return;
+  if (!confirm(t('confirm_msg', checked.length, fmtBytes(total)))) return;
 
   window.wsSend({ type: 'clean', paths });
-  termLog(`Cleaning ${checked.length} item(s)...`, 'ok');
+  termLog(t('log_cleaning', checked.length), 'ok');
 });
 
 window.renderCleanerList = renderCleanerList;

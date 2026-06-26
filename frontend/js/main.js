@@ -6,23 +6,27 @@ const RECONNECT_MS = 3000;
 let ws = null;
 let scanEntries = [];
 
-// ── View router ──────────────────────────────────────────
+// ── Lang toggle ───────────────────────────────────────────
+document.getElementById('lang-toggle').addEventListener('click', () => {
+  setLang(currentLang === 'en' ? 'es' : 'en');
+});
+
+// ── View router ───────────────────────────────────────────
 document.querySelectorAll('#nav a').forEach(link => {
   link.addEventListener('click', (e) => {
     e.preventDefault();
-    const view = link.dataset.view;
     document.querySelectorAll('#nav a').forEach(l => l.classList.remove('active'));
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     link.classList.add('active');
-    document.getElementById(`view-${view}`).classList.add('active');
+    document.getElementById(`view-${link.dataset.view}`).classList.add('active');
   });
 });
 
 // ── Prompt typing animation ───────────────────────────────
-const msgs = ['scan', 'detect junk', 'free space'];
 let mi = 0, ci = 0;
 const welcomeText = document.getElementById('welcome-text');
 function typePrompt() {
+  const msgs = t('prompt_msgs');
   if (ci < msgs[mi].length) {
     welcomeText.textContent += msgs[mi][ci++];
     setTimeout(typePrompt, 80);
@@ -42,13 +46,13 @@ function connect() {
 
   ws.onopen = () => {
     setStatus(true);
-    termLog('Agent connected.', 'ok');
+    termLog(t('log_connected'), 'ok');
     ws.send(JSON.stringify({ type: 'stats' }));
   };
 
   ws.onclose = () => {
     setStatus(false);
-    termLog('Agent disconnected. Retrying...', 'err');
+    termLog(t('log_retrying'), 'err');
     setTimeout(connect, RECONNECT_MS);
   };
 
@@ -78,7 +82,7 @@ function connect() {
 function setStatus(connected) {
   const el = document.getElementById('agent-status');
   el.className = connected ? 'connected' : 'disconnected';
-  el.querySelector('.label').textContent = connected ? 'agent connected' : 'agent disconnected';
+  el.querySelector('.label').textContent = connected ? t('agent_on') : t('agent_off');
 }
 
 window.wsSend = (msg) => ws?.readyState === WebSocket.OPEN && ws.send(JSON.stringify(msg));
@@ -87,13 +91,14 @@ window.wsSend = (msg) => ws?.readyState === WebSocket.OPEN && ws.send(JSON.strin
 document.getElementById('btn-scan').addEventListener('click', () => {
   scanEntries = [];
   window.wsSend({ type: 'scan' });
-  termLog('Scanning home directory...', 'ok');
+  termLog(t('log_scanning'), 'ok');
 });
 
 document.getElementById('btn-junk').addEventListener('click', () => {
   window.wsSend({ type: 'junk' });
-  termLog('Detecting junk...', 'ok');
+  termLog(t('log_junk'), 'ok');
 });
 
 // ── Start ─────────────────────────────────────────────────
+applyLang();
 connect();
