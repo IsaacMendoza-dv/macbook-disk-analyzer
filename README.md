@@ -163,6 +163,16 @@ Nuestra app muestra ~30 GB más que "Ajustes del Sistema → Almacenamiento" de 
 
 ---
 
+## Permisos requeridos
+
+`~/Library` aparece con **0 KB** si Terminal no tiene Acceso Total al Disco.
+
+**Ajustes del Sistema → Privacidad y Seguridad → Acceso total al disco → agregar Terminal**
+
+Sin este permiso el scanner no puede detectar cachés de apps, logs ni DerivedData de Xcode.
+
+---
+
 ## Compatibilidad
 
 | macOS | Nombre | Soporte |

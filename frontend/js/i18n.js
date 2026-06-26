@@ -93,6 +93,8 @@ const LANG = {
     ],
     guide_safe_title: 'Is it safe?',
     guide_safe_body:  'The agent only listens on 127.0.0.1 — it is never reachable from the internet. System folders (/System, /usr, /bin, /sbin, /etc) are permanently blocked from deletion. Nothing is deleted without your explicit confirmation in the dialog.',
+    guide_perms_title: '⚠️ Library folder shows 0 KB?',
+    guide_perms_body:  'macOS restricts access to ~/Library by default. To enable full disk analysis go to: System Settings → Privacy & Security → Full Disk Access → add Terminal.',
   },
 
   es: {
@@ -187,6 +189,8 @@ const LANG = {
     ],
     guide_safe_title: '¿Es seguro?',
     guide_safe_body:  'El agente solo escucha en 127.0.0.1 — nunca es accesible desde internet. Las carpetas del sistema (/System, /usr, /bin, /sbin, /etc) están bloqueadas permanentemente. Nada se elimina sin tu confirmación explícita en el diálogo.',
+    guide_perms_title: '⚠️ ¿Library aparece con 0 KB?',
+    guide_perms_body:  'macOS restringe el acceso a ~/Library por defecto. Para habilitar el análisis completo ve a: Ajustes del Sistema → Privacidad y Seguridad → Acceso total al disco → agrega Terminal.',
   }
 };
 
@@ -267,6 +271,8 @@ function renderGuide() {
   set('guide-sections-title', t('guide_sections_title'));
   set('guide-safe-title',     t('guide_safe_title'));
   set('guide-safe-body',      t('guide_safe_body'));
+  set('guide-perms-title',    t('guide_perms_title'));
+  set('guide-perms-body',     t('guide_perms_body'));
 
   const stepsEl = document.getElementById('guide-steps');
   if (stepsEl) {

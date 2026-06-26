@@ -121,7 +121,21 @@ Esta diferencia es **intencional** — el espacio "oculto" contiene basura limpi
 
 ### Escaneo por niveles en lugar de `du -d 3` directo
 
-`du -d 3` en un disco de 1 TB puede tardar 2+ minutos sin enviar ningún resultado (espera a terminar antes de imprimir). La solución es ejecutar `du -d 1`, luego `du -d 2`, luego `du -d 3` secuencialmente — cada nivel termina en segundos y envía resultados inmediatamente al frontend.
+`du -d 3` en un disco de 1 TB puede tardar 2+ minutos sin enviar ningún resultado. Además en macOS `du -sk` y `du -d N` son flags **mutuamente excluyentes** — combinarlos produce error silencioso y `done` inmediato sin datos.
+
+La solución final: `fs.readdirSync` para listar el home, luego `du -sk` individual por cada directorio y subdirectorio (depth 2). Cada medición llega inmediatamente al frontend.
+
+### Renderizado progresivo
+
+El frontend renderiza el árbol cada 20 entradas recibidas (`progress`) sin esperar `done`. Esto permite ver resultados en segundos aunque el scan siga corriendo.
+
+### Árbol muestra 0 KB en directorios contenedores
+
+`Users/` y `~/` muestran 0 KB porque son directorios raíz — su tamaño real está distribuido en sus hijos. Es comportamiento correcto de `du -sk`.
+
+### Library muestra 0 KB sin permisos
+
+macOS restringe `~/Library` por defecto. Terminal necesita **Acceso Total al Disco** en Privacidad y Seguridad para leer cachés, logs y DerivedData. Sin este permiso el scanner no puede detectar la mayoría de la basura.
 
 ### Límite de 3 reintentos en WebSocket
 
@@ -145,11 +159,13 @@ Los textos EN/ES se almacenan en un objeto `LANG` en `i18n.js`. La función `t(k
 
 ## 9. Criterios de éxito MVP
 
-- [x] Stats del disco correctos (APFS-aware)
-- [x] Escaneo con resultados progresivos (no blocking)
-- [x] UI en EN y ES con toggle
-- [x] Instrucciones claras de setup en la app
+- [x] Stats del disco correctos (APFS-aware con `diskutil`)
+- [x] Escaneo con resultados progresivos (renderizado cada 20 entradas)
+- [x] Árbol de archivos navegable con tamaños reales
+- [x] UI en EN y ES con toggle persistente
+- [x] Instrucciones claras de setup en la app (5 pasos + uso diario)
 - [x] Indicador de estado del agente claro (banner con status + descripción)
+- [x] Nota de permisos para ~/Library visible en la guía
 - [x] Cero borrados sin confirmación
 - [ ] Detect Junk funcionando end-to-end
 - [ ] Cleaner probado en producción
