@@ -53,24 +53,46 @@ const LANG = {
 
     // Onboarding guide
     guide_how_title:   'How it works',
-    guide_how_body:    'This app runs entirely on your Mac — no data leaves your machine. It requires two things running locally: the frontend (served at http://localhost:3000) and the agent (reads your disk). The Vercel URL is only for reference; always use http://localhost:3000.',
-    guide_setup_title: 'First-time setup',
+    guide_how_body:    'This app has two parts that must run at the same time on your Mac: an <strong>agent</strong> (reads your disk) and a <strong>frontend</strong> (the interface you see). Both run locally — nothing is sent to the internet. You always open the app at <strong>http://localhost:3000</strong>, not the Vercel URL (Vercel is blocked by the browser for local connections).',
+    guide_setup_title: 'First-time setup — do this once',
     guide_steps: [
-      { n:'1', title:'Install Node.js',      desc:'Required to run the local agent. Download the LTS version from <a href="https://nodejs.org" target="_blank">nodejs.org</a> and install it.' },
-      { n:'2', title:'Download the project', desc:'Open Terminal (⌘ Space → "Terminal") and run:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code>' },
-      { n:'3', title:'Start the agent',      desc:'In Terminal, run:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install</code><br><code>node server.js</code>' },
-      { n:'4', title:'Open the app locally', desc:'Because browsers block <code>ws://</code> connections from <code>https://</code> pages, you must open the app from your local machine. In a new Terminal tab run:<br><code>cd macbook-disk-analyzer/frontend</code><br><code>npx serve .</code><br>Then open <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> — <strong>not</strong> the Vercel URL.' },
-      { n:'5', title:'Keep both tabs open',  desc:'Terminal tab 1: agent running. Terminal tab 2: frontend server running. The indicator above will turn green when connected.' },
+      {
+        n:'1',
+        title:'Install Node.js (if you don\'t have it)',
+        desc:'Node.js is required to run the agent. Download the <strong>LTS</strong> version from <a href="https://nodejs.org" target="_blank">nodejs.org</a>, open the .pkg file and follow the installer.<br><br>To verify it worked, open Terminal and run: <code>node -v</code> — you should see a version number.'
+      },
+      {
+        n:'2',
+        title:'Open Terminal',
+        desc:'Press <strong>⌘ Space</strong>, type <strong>Terminal</strong> and press Enter. This opens the macOS terminal — you\'ll use it to run the commands below.'
+      },
+      {
+        n:'3',
+        title:'Clone the project',
+        desc:'In Terminal, run this command to download the project to your Mac:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code><br><br>This creates a folder called <strong>macbook-disk-analyzer</strong> in your current directory (usually your home folder).<br><br>⚠️ Make sure you are in your home directory before running this:<br><code>cd ~</code>'
+      },
+      {
+        n:'4',
+        title:'Start the agent — Terminal tab 1',
+        desc:'In Terminal, run these commands one by one:<br><code>cd ~/macbook-disk-analyzer/agent</code><br><code>npm install</code><br><code>node server.js</code><br><br>You should see: <strong>macdisk-agent running on ws://127.0.0.1:3001</strong><br>Leave this tab open — closing it stops the agent.'
+      },
+      {
+        n:'5',
+        title:'Start the frontend — Terminal tab 2',
+        desc:'Open a new Terminal tab with <strong>⌘ T</strong>, then run:<br><code>cd ~/macbook-disk-analyzer/frontend</code><br><code>npx serve .</code><br><br>When asked to install <code>serve</code>, press <strong>Y</strong> and Enter.<br>Then open <a href="http://localhost:3000" target="_blank"><strong>http://localhost:3000</strong></a> in your browser.<br><br>The indicator at the top of this page will turn <strong style="color:var(--accent)">green</strong> when the agent connects.'
+      },
     ],
+    guide_daily_title: 'Daily use (after first setup)',
+    guide_daily: 'You only need to run steps 4 and 5 every time you use the app. If port 3001 is already in use, run <code>kill $(lsof -ti:3001)</code> before starting the agent.',
     guide_sections_title: 'What each section does',
     guide_sections: [
-      { name:'Dashboard', desc:'Total, used and free disk space at a glance.' },
-      { name:'File Tree',  desc:'Your home folder sorted by size. Click any folder to see what\'s inside.' },
-      { name:'Scanner',    desc:'Finds junk automatically: app caches, logs, Xcode files, orphan node_modules.' },
-      { name:'Cleaner',    desc:'Select what to delete from the scanner results. Always asks for confirmation.' },
+      { name:'Dashboard', desc:'Total, used and free disk space. Updates automatically when the agent connects.' },
+      { name:'File Tree',  desc:'Your entire home folder sorted by size. Click any folder to expand it and see what\'s inside. Items over 100 MB appear in yellow, over 1 GB in red.' },
+      { name:'Scanner',    desc:'Click SCAN DISK first, then DETECT JUNK. Finds: app caches, system logs, Xcode DerivedData, iOS simulators, orphan node_modules and .DS_Store files.' },
+      { name:'Cleaner',    desc:'After scanning, select the items you want to delete using the checkboxes. Press DELETE SELECTED — you will always see a confirmation dialog before anything is removed.' },
     ],
     guide_safe_title: 'Is it safe?',
-    guide_safe_body:  'The agent only listens on 127.0.0.1 — it is never reachable from the internet. System folders (/System, /usr, /bin) are permanently blocked from deletion. Nothing is deleted without your explicit confirmation.',
+    guide_safe_body:  'The agent only listens on 127.0.0.1 — it is never reachable from the internet. System folders (/System, /usr, /bin, /sbin, /etc) are permanently blocked from deletion. Nothing is deleted without your explicit confirmation in the dialog.',
   },
 
   es: {
@@ -125,24 +147,46 @@ const LANG = {
 
     // Onboarding guide
     guide_how_title:   'Cómo funciona',
-    guide_how_body:    'Esta app corre completamente en tu Mac — ningún dato sale de tu máquina. Requiere dos cosas corriendo localmente: el frontend (en http://localhost:3000) y el agente (lee tu disco). La URL de Vercel es solo de referencia; siempre usa http://localhost:3000.',
-    guide_setup_title: 'Configuración inicial',
+    guide_how_body:    'Esta app tiene dos partes que deben correr al mismo tiempo en tu Mac: un <strong>agente</strong> (lee tu disco) y un <strong>frontend</strong> (la interfaz que ves). Ambos corren localmente — nada se envía a internet. Siempre abre la app en <strong>http://localhost:3000</strong>, no en la URL de Vercel (el browser bloquea las conexiones locales desde Vercel).',
+    guide_setup_title: 'Configuración inicial — hazlo una sola vez',
     guide_steps: [
-      { n:'1', title:'Instala Node.js',             desc:'Necesario para correr el agente. Descarga la versión LTS en <a href="https://nodejs.org" target="_blank">nodejs.org</a> e instálala.' },
-      { n:'2', title:'Descarga el proyecto',          desc:'Abre Terminal (⌘ Espacio → "Terminal") y ejecuta:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code>' },
-      { n:'3', title:'Inicia el agente',              desc:'En Terminal, ejecuta:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install</code><br><code>node server.js</code>' },
-      { n:'4', title:'Abre la app localmente',        desc:'Los browsers bloquean conexiones <code>ws://</code> desde páginas <code>https://</code>, por eso debes abrir la app desde tu máquina. En una nueva pestaña de Terminal ejecuta:<br><code>cd macbook-disk-analyzer/frontend</code><br><code>npx serve .</code><br>Luego abre <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> — <strong>no</strong> la URL de Vercel.' },
-      { n:'5', title:'Deja ambas pestañas abiertas', desc:'Pestaña 1 de Terminal: agente corriendo. Pestaña 2: servidor del frontend. El indicador de arriba se pondrá verde cuando esté conectado.' },
+      {
+        n:'1',
+        title:'Instala Node.js (si no lo tienes)',
+        desc:'Node.js es necesario para correr el agente. Descarga la versión <strong>LTS</strong> desde <a href="https://nodejs.org" target="_blank">nodejs.org</a>, abre el archivo .pkg y sigue el instalador.<br><br>Para verificar que funcionó, abre Terminal y ejecuta: <code>node -v</code> — deberías ver un número de versión.'
+      },
+      {
+        n:'2',
+        title:'Abre Terminal',
+        desc:'Presiona <strong>⌘ Espacio</strong>, escribe <strong>Terminal</strong> y presiona Enter. Aquí ejecutarás los comandos de los siguientes pasos.'
+      },
+      {
+        n:'3',
+        title:'Clona el proyecto',
+        desc:'En Terminal, ejecuta este comando para descargar el proyecto a tu Mac:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code><br><br>Esto crea una carpeta llamada <strong>macbook-disk-analyzer</strong> en tu directorio actual.<br><br>⚠️ Asegúrate de estar en tu carpeta home antes de ejecutar esto:<br><code>cd ~</code>'
+      },
+      {
+        n:'4',
+        title:'Inicia el agente — pestaña 1 de Terminal',
+        desc:'En Terminal, ejecuta estos comandos uno por uno:<br><code>cd ~/macbook-disk-analyzer/agent</code><br><code>npm install</code><br><code>node server.js</code><br><br>Deberías ver: <strong>macdisk-agent running on ws://127.0.0.1:3001</strong><br>Deja esta pestaña abierta — cerrarla detiene el agente.'
+      },
+      {
+        n:'5',
+        title:'Inicia el frontend — pestaña 2 de Terminal',
+        desc:'Abre una nueva pestaña con <strong>⌘ T</strong>, luego ejecuta:<br><code>cd ~/macbook-disk-analyzer/frontend</code><br><code>npx serve .</code><br><br>Si te pide instalar <code>serve</code>, presiona <strong>Y</strong> y Enter.<br>Luego abre <a href="http://localhost:3000" target="_blank"><strong>http://localhost:3000</strong></a> en tu browser.<br><br>El indicador de arriba se pondrá <strong style="color:var(--accent)">verde</strong> cuando el agente conecte.'
+      },
     ],
+    guide_daily_title: 'Uso diario (después del setup)',
+    guide_daily: 'Solo necesitas ejecutar los pasos 4 y 5 cada vez que uses la app. Si el puerto 3001 ya está en uso, ejecuta <code>kill $(lsof -ti:3001)</code> antes de iniciar el agente.',
     guide_sections_title: 'Qué hace cada sección',
     guide_sections: [
-      { name:'Resumen',  desc:'Espacio total, usado y libre de un vistazo.' },
-      { name:'Árbol',    desc:'Tu carpeta home ordenada por tamaño. Haz clic en cualquier carpeta para ver qué hay adentro.' },
-      { name:'Escáner',  desc:'Encuentra basura automáticamente: cachés de apps, logs, archivos de Xcode, node_modules huérfanos.' },
-      { name:'Limpieza', desc:'Selecciona qué eliminar de los resultados del escáner. Siempre pide confirmación.' },
+      { name:'Resumen',  desc:'Espacio total, usado y libre. Se actualiza automáticamente cuando el agente conecta.' },
+      { name:'Árbol',    desc:'Tu carpeta home completa ordenada por tamaño. Haz clic en cualquier carpeta para expandirla. Elementos mayores a 100 MB en amarillo, mayores a 1 GB en rojo.' },
+      { name:'Escáner',  desc:'Primero haz clic en ESCANEAR DISCO, luego en DETECTAR BASURA. Encuentra: cachés de apps, logs del sistema, Xcode DerivedData, simuladores iOS, node_modules huérfanos y archivos .DS_Store.' },
+      { name:'Limpieza', desc:'Después de escanear, selecciona los elementos a eliminar con los checkboxes. Presiona ELIMINAR SELECCIONADOS — siempre verás un diálogo de confirmación antes de que se borre algo.' },
     ],
     guide_safe_title: '¿Es seguro?',
-    guide_safe_body:  'El agente solo escucha en 127.0.0.1 — nunca es accesible desde internet. Las carpetas del sistema (/System, /usr, /bin) están bloqueadas permanentemente. Nada se elimina sin tu confirmación explícita.',
+    guide_safe_body:  'El agente solo escucha en 127.0.0.1 — nunca es accesible desde internet. Las carpetas del sistema (/System, /usr, /bin, /sbin, /etc) están bloqueadas permanentemente. Nada se elimina sin tu confirmación explícita en el diálogo.',
   }
 };
 
@@ -212,11 +256,14 @@ function applyLang() {
 }
 
 function renderGuide() {
-  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  const set  = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  const setH = (id, v) => { const el = document.getElementById(id); if (el) el.innerHTML  = v; };
 
   set('guide-how-title',      t('guide_how_title'));
-  set('guide-how-body',       t('guide_how_body'));
+  setH('guide-how-body',      t('guide_how_body'));
   set('guide-setup-title',    t('guide_setup_title'));
+  set('guide-daily-title',    t('guide_daily_title'));
+  setH('guide-daily',         t('guide_daily'));
   set('guide-sections-title', t('guide_sections_title'));
   set('guide-safe-title',     t('guide_safe_title'));
   set('guide-safe-body',      t('guide_safe_body'));
@@ -224,7 +271,7 @@ function renderGuide() {
   const stepsEl = document.getElementById('guide-steps');
   if (stepsEl) {
     stepsEl.innerHTML = t('guide_steps').map((s, i) => `
-      <div class="guide-step ${i === 2 ? 'highlight' : ''}">
+      <div class="guide-step ${i === 3 ? 'highlight' : ''}">
         <span class="step-num">${s.n}</span>
         <div>
           <div class="step-title">${s.title}</div>

@@ -1,5 +1,6 @@
 // dashboard.js — render disk stats and ASCII bars
 
+// fmtBytes — uses decimal GB (1 GB = 1,000,000,000) to match macOS Storage display
 function fmtBytes(b) {
   if (b >= 1e12) return (b / 1e12).toFixed(1) + ' TB';
   if (b >= 1e9)  return (b / 1e9).toFixed(1)  + ' GB';
