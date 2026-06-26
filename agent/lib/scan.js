@@ -1,28 +1,29 @@
-const { execFile } = require('child_process');
-const os = require('os');
+const { spawn } = require('child_process');
+const readline  = require('readline');
+const os        = require('os');
 
-// Scan level by level: depth 1 first (fast), then depth 2, then 3
-// Each level sends results immediately so the UI updates progressively
+// Stream du output line-by-line using spawn+readline
+// Depth 2 only — fast enough for any disk size, covers all major dirs
 module.exports = (targetPath, onEntry) => new Promise((resolve) => {
   const root = targetPath || os.homedir();
 
-  const scanDepth = (depth) => new Promise((res) => {
-    execFile('du', ['-sk', '-d', String(depth), root], (err, stdout) => {
-      if (err) return res();
-      stdout.trim().split('\n').forEach((line) => {
-        const parts = line.split('\t');
-        if (parts.length < 2) return;
-        const size = parseInt(parts[0]) * 1024;
-        const path = parts[1];
-        if (path && path !== root) onEntry({ path, size });
-      });
-      res();
-    });
+  const du = spawn('du', ['-sk', '-d', '2', root], {
+    // Suppress "permission denied" stderr noise
+    stdio: ['ignore', 'pipe', 'ignore']
   });
 
-  // Run depth 1 immediately, then 2, then 3 — each sends results as it finishes
-  scanDepth(1)
-    .then(() => scanDepth(2))
-    .then(() => scanDepth(3))
-    .then(resolve);
+  const rl = readline.createInterface({ input: du.stdout });
+
+  rl.on('line', (line) => {
+    const [sizeStr, ...pathParts] = line.split('\t');
+    const path = pathParts.join('\t').trim();
+    const size = parseInt(sizeStr) * 1024;
+    if (path && path !== root && !isNaN(size)) {
+      onEntry({ path, size });
+    }
+  });
+
+  du.on('close', resolve);
+  // Safety timeout — resolve after 45s no matter what
+  setTimeout(resolve, 45000);
 });
