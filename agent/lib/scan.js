@@ -1,12 +1,10 @@
-const { execFile, spawn } = require('child_process');
-const readline = require('readline');
+const { execFile } = require('child_process');
 const os   = require('os');
 const path = require('path');
 const fs   = require('fs');
 
 const EXCLUDE = new Set(['macbook-disk-analyzer', '.Trash', 'node_modules']);
 
-// Get size of a single path with du -sk
 const duSize = (p) => new Promise((res) => {
   execFile('du', ['-sk', p], { stdio: ['ignore', 'pipe', 'ignore'] }, (err, stdout) => {
     if (err) return res(0);
@@ -15,32 +13,40 @@ const duSize = (p) => new Promise((res) => {
   });
 });
 
-module.exports = async (targetPath, onEntry) => {
-  const root = targetPath || os.homedir();
-
-  // Level 1: read home dir entries
-  let entries;
-  try { entries = fs.readdirSync(root); } catch { return; }
-
-  for (const name of entries) {
+function collectDirs(root) {
+  const dirs = [];
+  let level1;
+  try { level1 = fs.readdirSync(root); } catch { return dirs; }
+  for (const name of level1) {
     if (EXCLUDE.has(name) || name.startsWith('.')) continue;
     const full = path.join(root, name);
-    const size = await duSize(full);
-    if (size > 0) onEntry({ path: full, size });
-
-    // Level 2: subdirectories
+    dirs.push(full);
     try {
-      const subs = fs.readdirSync(full);
-      for (const sub of subs) {
+      const level2 = fs.readdirSync(full);
+      for (const sub of level2) {
         if (EXCLUDE.has(sub) || sub.startsWith('.')) continue;
         const subFull = path.join(full, sub);
-        try {
-          if (fs.statSync(subFull).isDirectory()) {
-            const subSize = await duSize(subFull);
-            if (subSize > 0) onEntry({ path: subFull, size: subSize });
-          }
-        } catch {}
+        try { if (fs.statSync(subFull).isDirectory()) dirs.push(subFull); } catch {}
       }
     } catch {}
+  }
+  return dirs;
+}
+
+function asciiBar(done, total, width = 20) {
+  const filled = Math.round((done / total) * width);
+  return '[' + '█'.repeat(filled) + '░'.repeat(width - filled) + `] ${done}/${total}`;
+}
+
+module.exports = async (targetPath, onEntry, onProgress) => {
+  const root = targetPath || os.homedir();
+  const dirs = collectDirs(root);
+  const total = dirs.length;
+
+  for (let i = 0; i < dirs.length; i++) {
+    const p = dirs[i];
+    const size = await duSize(p);
+    if (size > 0) onEntry({ path: p, size });
+    if (onProgress) onProgress({ message: `Scanning ${asciiBar(i + 1, total)} ${path.basename(p)}` });
   }
 };

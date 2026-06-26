@@ -24,7 +24,11 @@ wss.on('connection', (ws) => {
 
       case 'scan':
         send(ws, 'log', { message: `Scanning ${msg.path || '~'} ...` });
-        await scan(msg.path, (entry) => send(ws, 'progress', entry));
+        await scan(
+          msg.path,
+          (entry) => send(ws, 'progress', entry),
+          (prog)  => send(ws, 'log', prog)
+        );
         send(ws, 'done', {});
         break;
 
