@@ -1,10 +1,12 @@
 // main.js — init, WebSocket connection, view router
 
 const WS_URL = 'ws://127.0.0.1:3001';
-const RECONNECT_MS = 3000;
+const RECONNECT_MS = 4000;
+const MAX_RETRIES  = 3;
 
 let ws = null;
 let scanEntries = [];
+let retries = 0;
 
 // ── Lang toggle ───────────────────────────────────────────
 document.getElementById('lang-toggle').addEventListener('click', () => {
@@ -45,19 +47,28 @@ function connect() {
   ws = new WebSocket(WS_URL);
 
   ws.onopen = () => {
+    retries = 0;
     setStatus(true);
+    hideRetryBtn();
     termLog(t('log_connected'), 'ok');
     ws.send(JSON.stringify({ type: 'stats' }));
   };
 
   ws.onclose = () => {
     setStatus(false);
-    termLog(t('log_retrying'), 'err');
-    setTimeout(connect, RECONNECT_MS);
+    if (retries < MAX_RETRIES) {
+      retries++;
+      termLog(t('log_retrying'), 'err');
+      setTimeout(connect, RECONNECT_MS);
+    } else {
+      termLog(t('log_agent_stopped'), 'err');
+      document.getElementById('agent-install').style.display = 'block';
+      showRetryBtn();
+    }
   };
 
   ws.onerror = () => {
-    document.getElementById('agent-install').style.display = 'block';
+    // handled by onclose
   };
 
   ws.onmessage = ({ data }) => {
@@ -77,6 +88,26 @@ function connect() {
         break;
     }
   };
+}
+
+function showRetryBtn() {
+  let btn = document.getElementById('btn-retry');
+  if (btn) return;
+  btn = document.createElement('button');
+  btn.id = 'btn-retry';
+  btn.style.marginTop = '16px';
+  btn.textContent = t('btn_retry');
+  btn.addEventListener('click', () => {
+    retries = 0;
+    hideRetryBtn();
+    termLog(t('log_retrying'), 'ok');
+    connect();
+  });
+  document.getElementById('agent-install').appendChild(btn);
+}
+
+function hideRetryBtn() {
+  document.getElementById('btn-retry')?.remove();
 }
 
 function setStatus(connected) {

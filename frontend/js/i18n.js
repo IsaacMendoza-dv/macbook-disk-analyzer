@@ -61,10 +61,9 @@ const LANG = {
     log_scanning:   'Scanning home directory...',
     log_junk:       'Detecting junk...',
     log_cleaning:   (n) => `Cleaning ${n} item(s)...`,
+    log_agent_stopped: 'Agent not found. Start it on your Mac and click Retry.',
+    btn_retry:      '[ RETRY CONNECTION ]',
   },
-
-  es: {
-    // Nav
     nav_home:     '~ inicio',
     nav_dashboard:'resumen',
     nav_filetree: 'árbol',
@@ -123,6 +122,8 @@ const LANG = {
     log_scanning:  'Escaneando directorio home...',
     log_junk:      'Detectando basura...',
     log_cleaning:  (n) => `Eliminando ${n} elemento(s)...`,
+    log_agent_stopped: 'Agente no encontrado. Inícialo en tu Mac y presiona Reintentar.',
+    btn_retry:     '[ REINTENTAR CONEXIÓN ]',
   }
 };
 
