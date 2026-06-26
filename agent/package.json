@@ -1,0 +1,26 @@
+{
+  "name": "macdisk-agent",
+  "version": "1.0.0",
+  "description": "Local WebSocket agent for MacDisk Analyzer — runs on your Mac, analyzes disk usage",
+  "main": "server.js",
+  "bin": {
+    "macdisk-agent": "./server.js"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "8.18.0"
+  },
+  "engines": {
+    "node": ">=18",
+    "os": ["darwin"]
+  },
+  "keywords": ["macos", "disk", "storage", "analyzer", "cleaner"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/IsaacMendoza-dv/macbook-disk-analyzer"
+  },
+  "files": ["server.js", "lib/"]
+}

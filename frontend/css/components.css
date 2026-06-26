@@ -1,0 +1,110 @@
+/* components.css — barras ASCII, árbol, tablas, cleaner */
+
+/* ── Section titles ── */
+.section-title {
+  color: var(--accent);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 16px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── ASCII progress bar ── */
+.bar-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 60px 80px;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+.bar-track {
+  font-family: var(--font);
+  color: var(--accent);
+  letter-spacing: 0;
+}
+.bar-track .filled { color: var(--accent); }
+.bar-track .empty  { color: var(--muted); }
+.bar-pct { color: var(--text); text-align: right; }
+.bar-size { color: var(--muted); text-align: right; font-size: 11px; }
+
+/* ── Disk summary card ── */
+.disk-card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.disk-card .disk-nums {
+  display: flex;
+  gap: 32px;
+  margin-bottom: 20px;
+}
+.disk-card .num-block { display: flex; flex-direction: column; gap: 4px; }
+.disk-card .num-label { color: var(--muted); font-size: 11px; }
+.disk-card .num-value { color: var(--text); font-size: 20px; font-weight: 700; }
+.disk-card .num-value.accent { color: var(--accent); }
+.disk-card .num-value.warn   { color: var(--warn); }
+.disk-card .num-value.danger { color: var(--danger); }
+
+/* ── File tree ── */
+.tree { font-size: 12px; line-height: 2; }
+.tree-node {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 2px 0;
+  white-space: nowrap;
+}
+.tree-node:hover { color: var(--accent); }
+.tree-node .tree-icon { color: var(--muted); width: 14px; text-align: center; }
+.tree-node .tree-size { color: var(--muted); font-size: 11px; margin-left: auto; min-width: 70px; text-align: right; }
+.tree-node .tree-size.warn   { color: var(--warn); }
+.tree-node .tree-size.danger { color: var(--danger); }
+.tree-children { padding-left: 20px; }
+.tree-children.collapsed { display: none; }
+
+/* ── Junk table ── */
+.junk-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.junk-table th {
+  text-align: left;
+  color: var(--muted);
+  font-size: 11px;
+  padding: 6px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.junk-table td { padding: 8px 12px; border-bottom: 1px solid rgba(0,255,65,0.05); }
+.junk-table tr:hover td { background: rgba(0,255,65,0.03); }
+.junk-table .td-size { color: var(--warn); text-align: right; }
+.junk-table .td-cat  { color: var(--accent2); }
+
+/* ── Cleaner list ── */
+.clean-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+.clean-item {
+  display: grid;
+  grid-template-columns: 20px 1fr auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+}
+.clean-item input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; }
+.clean-item .ci-path { color: var(--text); word-break: break-all; }
+.clean-item .ci-size { color: var(--warn); min-width: 70px; text-align: right; }
+.clean-item .ci-cat  { color: var(--muted); font-size: 11px; min-width: 120px; text-align: right; }
+
+.clean-summary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+.clean-summary .selected-info { color: var(--muted); }
+.clean-summary .freed-info    { color: var(--warn); }

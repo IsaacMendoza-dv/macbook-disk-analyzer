@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MacDisk Analyzer</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <header id="header">
+    <span class="title">MacDisk Analyzer</span>
+    <span class="subtitle">v1.0</span>
+    <div id="agent-status" class="disconnected">
+      <span class="dot"></span>
+      <span class="label">agent disconnected</span>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav id="nav">
+    <a href="#" data-view="welcome" class="active">~ home</a>
+    <a href="#" data-view="dashboard">dashboard</a>
+    <a href="#" data-view="filetree">file tree</a>
+    <a href="#" data-view="scanner">scanner</a>
+    <a href="#" data-view="cleaner">cleaner</a>
+  </nav>
+
+  <!-- Main content -->
+  <main id="main">
+
+    <!-- Welcome -->
+    <div id="view-welcome" class="view active">
+      <pre>
+ __  __           ____  _     _
+|  \/  | __ _  __|  _ \(_)___| | __
+| |\/| |/ _` |/ __| | | | / __| |/ /
+| |  | | (_| | (__| |_| | \__ \   &lt;
+|_|  |_|\__,_|\___|____/|_|___/_|\_\
+
+      Analyzer v1.0 — Storage Intelligence
+      </pre>
+      <div class="prompt-line">
+        <span class="ps1">user@macbook:~$</span>
+        <span id="welcome-text"></span>
+        <span class="cursor"></span>
+      </div>
+      <div id="agent-install" style="display:none; margin-top:24px;">
+        <p class="muted">Agent not detected. Run in your Mac terminal:</p>
+        <br>
+        <code style="color:var(--accent)">cd agent &amp;&amp; npm install &amp;&amp; node server.js</code>
+      </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="view-dashboard" class="view">
+      <p class="section-title">Disk Overview</p>
+      <div id="disk-card" class="disk-card">
+        <div class="disk-nums">
+          <div class="num-block"><span class="num-label">total</span><span class="num-value" id="d-total">—</span></div>
+          <div class="num-block"><span class="num-label">used</span><span class="num-value warn" id="d-used">—</span></div>
+          <div class="num-block"><span class="num-label">free</span><span class="num-value accent" id="d-free">—</span></div>
+        </div>
+        <div id="d-bar"></div>
+      </div>
+      <p class="section-title">Top Directories</p>
+      <div id="d-dirs"></div>
+    </div>
+
+    <!-- File Tree -->
+    <div id="view-filetree" class="view">
+      <p class="section-title">File Tree</p>
+      <div id="tree-root" class="tree"></div>
+    </div>
+
+    <!-- Scanner -->
+    <div id="view-scanner" class="view">
+      <p class="section-title">Junk Scanner</p>
+      <div style="margin-bottom:16px; display:flex; gap:10px;">
+        <button id="btn-scan">[ SCAN DISK ]</button>
+        <button id="btn-junk">[ DETECT JUNK ]</button>
+      </div>
+      <table class="junk-table">
+        <thead><tr><th>category</th><th>path</th><th style="text-align:right">size</th></tr></thead>
+        <tbody id="junk-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Cleaner -->
+    <div id="view-cleaner" class="view">
+      <p class="section-title">Cleaner</p>
+      <div id="clean-list" class="clean-list"></div>
+      <div class="clean-summary">
+        <span class="selected-info" id="clean-count">0 items selected</span>
+        <span class="freed-info" id="clean-freed"></span>
+        <button id="btn-clean" class="danger" style="margin-left:auto">[ DELETE SELECTED ]</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Terminal log -->
+  <div id="log-panel">
+    <div class="log-line muted">macdisk-analyzer ready.</div>
+  </div>
+
+</div>
+
+<script src="js/terminal.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/filetree.js"></script>
+<script src="js/scanner.js"></script>
+<script src="js/cleaner.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+/* base.css — variables, reset, tipografía */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+:root {
+  --bg:        #060a0f;
+  --surface:   rgba(10, 18, 28, 0.85);
+  --border:    rgba(0, 255, 65, 0.2);
+  --accent:    #00ff41;
+  --accent2:   #00aaff;
+  --warn:      #ffaa00;
+  --danger:    #ff4466;
+  --text:      #c8d8e8;
+  --muted:     #4a6070;
+  --font:      'JetBrains Mono', 'Fira Code', monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scanlines overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+a { color: var(--accent2); text-decoration: none; }
+button {
+  font-family: var(--font);
+  font-size: 13px;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--accent);
+  padding: 6px 14px;
+  transition: background 0.15s;
+}
+button:hover { background: rgba(0, 255, 65, 0.08); }
+button.danger { border-color: var(--danger); color: var(--danger); }
+button.danger:hover { background: rgba(255, 68, 102, 0.1); }
+
+.muted { color: var(--muted); }
+.warn  { color: var(--warn); }
+.danger-text { color: var(--danger); }
+.accent { color: var(--accent); }
