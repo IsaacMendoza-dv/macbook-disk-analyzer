@@ -1,212 +1,156 @@
 # MacDisk Analyzer — Especificación de Producto
 
-> App web con tema terminal para analizar y liberar almacenamiento en MacBooks.
-> Frontend en Vercel + agente local en el Mac comunicados por WebSocket.
+> Última actualización: 2026-06-25
 
 ---
 
 ## 1. Problema
 
-Los usuarios de MacBook se quedan sin espacio sin saber exactamente qué lo consume. Las herramientas nativas son poco granulares y no sugieren acciones concretas.
+Los usuarios de MacBook se quedan sin espacio sin saber exactamente qué lo consume. Las herramientas nativas (Finder, Almacenamiento del Sistema) son poco granulares y no sugieren acciones concretas.
 
 ---
 
-## 2. Arquitectura general (Opción A)
+## 2. Solución
 
-```
-┌─────────────────────────────────┐     WebSocket      ┌──────────────────────────┐
-│  Browser (Vercel)               │ ◄─────────────────► │  Agente local (Mac)      │
-│  HTML + CSS + JS vanilla        │   localhost:3001    │  Node.js standalone      │
-│  macdisk-analyzer.vercel.app    │                     │  npx macdisk-agent       │
-└─────────────────────────────────┘                     └──────────────────────────┘
-                                                                    │
-                                                           du / find / df
-                                                                    │
-                                                           Sistema de archivos
-```
-
-**Flujo de instalación para el usuario:**
-1. Abrir `macdisk-analyzer.vercel.app` en el browser
-2. Si no tiene el agente: la app muestra un comando de instalación
-3. `npx macdisk-agent` — corre el agente en segundo plano
-4. La app detecta la conexión y habilita el escaneo
+App web con estética de terminal que analiza el disco del Mac, visualiza el uso por categorías, identifica archivos pesados y temporales, y guía al usuario para liberar espacio de forma segura.
 
 ---
 
-## 3. Stack técnico
+## 3. Arquitectura
+
+### Decisión: Opción A — Frontend local + agente local
+
+```
+http://localhost:3000        ws://127.0.0.1:3001
+  (npx serve .)    ◄────────►  (node server.js)
+  HTML/CSS/JS                   Node.js + macOS CLI
+```
+
+**Por qué no Vercel directo:** los browsers bloquean conexiones `ws://` desde páginas `https://`. El frontend debe servirse desde `http://` para conectar al agente local.
+
+**Por qué no Electron:** mantiene la arquitectura web sin empaquetar una app nativa.
+
+---
+
+## 4. Stack
 
 | Capa | Tecnología | Razón |
 |---|---|---|
-| Frontend | HTML + CSS + JS vanilla | Sin bundler, deploy directo a Vercel |
-| Estilos | CSS puro (variables CSS) | Reutiliza base de Morning Routine |
-| Hosting | Vercel | Ya configurado, auto-deploy desde `main` |
-| Agente | Node.js (npm package) | Acceso nativo al FS de macOS |
-| Comunicación | WebSocket (`ws`) | Log en tiempo real, bidireccional |
-| Análisis disco | `child_process` + `du`, `find`, `df` | Comandos nativos de macOS |
+| Frontend | HTML + CSS + JS vanilla | Sin bundler, cero dependencias de build |
+| Estilos | CSS puro con variables | Control total del tema terminal |
+| Base visual | Morning Routine Kiro (`base.css`) | Mismo sistema de diseño, reutilizado |
+| Agente | Node.js + `ws@8.18.0` | Acceso nativo al FS de macOS |
+| Comunicación | WebSocket | Bidireccional, streaming en tiempo real |
+| Disco stats | `diskutil info -plist /` | Único comando que reporta APFS container correcto |
+| Escaneo | `du -sk -d N` por niveles | Streaming progresivo (d1→d2→d3) |
+| Junk detection | `du` + `find` | Comandos nativos, sin dependencias |
+| Borrado | `rm -rf` con whitelist | Simple, con paths del sistema bloqueados |
 
 ---
 
-## 4. Estructura del proyecto
+## 5. Diseño visual
 
-```
-macbook-disk-analyzer/
-├── frontend/                  ← Deploy a Vercel
-│   ├── index.html
-│   ├── css/
-│   │   ├── base.css           ← Variables, tipografía (basado en Morning Routine)
-│   │   ├── layout.css         ← Shell, header, prompt
-│   │   ├── dashboard.css      ← Barras de progreso ASCII
-│   │   ├── filetree.css       ← Árbol de directorios
-│   │   └── terminal.css       ← Panel de log en tiempo real
-│   └── js/
-│       ├── main.js            ← Init, conexión WebSocket, router
-│       ├── dashboard.js       ← Render stats del disco
-│       ├── filetree.js        ← Árbol navegable
-│       ├── scanner.js         ← Resultados del scan, categorías de junk
-│       ├── cleaner.js         ← Checkboxes, confirmación, borrado
-│       └── terminal.js        ← Log en tiempo real (output del WS)
-│
-├── agent/                     ← Publicado en npm como `macdisk-agent`
-│   ├── package.json
-│   ├── server.js              ← WebSocket server en localhost:3001
-│   └── lib/
-│       ├── stats.js           ← df -h → espacio total/usado/libre
-│       ├── scan.js            ← du recursivo con streaming
-│       ├── junk.js            ← Detección de cachés, logs, node_modules, Xcode
-│       └── clean.js           ← rm con validación de paths seguros
-│
-└── SPEC.md
-```
-
----
-
-## 5. Diseño visual — Tema Terminal
-
-Basado en el sistema de diseño de **Morning Routine Kiro** (`base.css`).
-
-### Paleta de colores
+### Paleta
 
 ```css
---bg:        #060a0f;              /* fondo principal */
---surface:   rgba(10,18,28,0.75); /* paneles / cards */
---border:    rgba(0,255,170,0.18);/* bordes */
---accent:    #00ff41;             /* verde terminal clásico */
---accent2:   #00aaff;             /* azul eléctrico secundario */
---warn:      #ffaa00;             /* advertencias */
---danger:    #ff4466;             /* zona de peligro / borrado */
---text:      #c8d8e8;             /* texto principal */
---muted:     #4a6070;             /* texto secundario */
+--bg:       #060a0f;               /* fondo */
+--surface:  rgba(10,18,28,0.85);   /* paneles */
+--border:   rgba(0,255,65,0.2);    /* bordes */
+--accent:   #00ff41;               /* verde terminal */
+--accent2:  #00aaff;               /* azul secundario */
+--warn:     #ffaa00;               /* advertencias */
+--danger:   #ff4466;               /* peligro/borrado */
+--text:     #c8d8e8;               /* texto */
+--muted:    #4a6070;               /* texto secundario */
 ```
 
 ### Tipografía
+`JetBrains Mono` → `Fira Code` → `monospace`
 
-```css
-font-family: "JetBrains Mono", "Fira Code", monospace;
-```
-
-### Componentes UI
-
-- Prompt animado: `user@macbook:~$ _` con cursor parpadeante
-- Barras de progreso: `[████████░░░░] 62%`
-- Tablas con bordes ASCII: `┌─┬─┐ │ └─┴─┘`
-- Efecto scanlines sobre la pantalla completa
-- Archivos > 100 MB → texto en `--warn`
-- Archivos > 1 GB → texto en `--danger`
+### Efectos
+- Scanlines sobre toda la pantalla (`body::after`)
+- Cursor parpadeante (`@keyframes blink`)
+- Punto de conexión con pulso animado (`@keyframes pulse`)
+- Barras ASCII: `[████████░░░░] 62%`
 
 ---
 
-## 6. Módulos del frontend
+## 6. Módulos
 
-| Módulo | Descripción |
+### Frontend (`frontend/`)
+
+| Archivo | Responsabilidad |
 |---|---|
-| **Dashboard** | Espacio total / usado / libre con barras ASCII |
-| **File Tree** | Árbol de directorios navegable con tamaños |
-| **Scanner** | Categorías de junk detectadas con tamaños |
-| **Cleaner** | Lista con checkboxes + confirmación antes de borrar |
-| **Terminal Log** | Panel inferior con output en tiempo real del agente |
+| `index.html` | Esqueleto HTML, 5 vistas, sin lógica |
+| `css/base.css` | Variables, reset, tipografía, scanlines |
+| `css/layout.css` | Grid shell (header/nav/main/log), estados del agente |
+| `css/components.css` | Barras ASCII, árbol, tabla junk, cleaner, guía onboarding |
+| `js/i18n.js` | Diccionarios EN/ES, `t()`, `setLang()`, `applyLang()`, `renderGuide()` |
+| `js/main.js` | WebSocket (3 reintentos max), router de vistas, lang toggle |
+| `js/terminal.js` | `termLog()` — append al panel inferior |
+| `js/dashboard.js` | `renderStats()`, `renderDirs()`, `fmtBytes()` (GB decimales) |
+| `js/filetree.js` | `buildTree()`, `renderTree()` — árbol con toggle colapsar/expandir |
+| `js/scanner.js` | `renderJunk()` — tabla de categorías detectadas |
+| `js/cleaner.js` | `renderCleanerList()` — checkboxes, summary, confirm dialog |
 
----
+### Agente (`agent/`)
 
-## 7. API del agente (WebSocket)
-
-```
-ws://localhost:3001
-
-Cliente → Agente:
-  { type: "stats" }
-  { type: "scan", path: "/Users/isaac" }
-  { type: "junk" }
-  { type: "clean", paths: ["/path/a", "/path/b"] }
-
-Agente → Cliente:
-  { type: "stats",    data: { total, used, free, percent } }
-  { type: "progress", data: { path, size } }
-  { type: "tree",     data: { tree } }
-  { type: "junk",     data: [ { category, path, size } ] }
-  { type: "log",      data: { message } }
-  { type: "done",     data: { freed } }
-```
-
----
-
-## 8. Categorías de junk detectadas
-
-| Categoría | Path típico |
+| Archivo | Responsabilidad |
 |---|---|
-| Cachés de apps | `~/Library/Caches` |
-| Logs del sistema | `~/Library/Logs` |
-| DerivedData (Xcode) | `~/Library/Developer/Xcode/DerivedData` |
-| Simuladores iOS | `~/Library/Developer/CoreSimulator/Caches` |
-| node_modules huérfanos | Buscados con `find ~ -name node_modules -maxdepth 5` |
-| Archivos `.DS_Store` | Buscados con `find ~ -name .DS_Store` |
-| Downloads antiguos (+30 días) | `~/Downloads` filtrado por `mtime` |
+| `server.js` | WS server en 127.0.0.1:3001, router de mensajes |
+| `lib/stats.js` | `diskutil info -plist /` → APFS container stats |
+| `lib/scan.js` | `du -sk -d N` niveles 1→2→3, envía cada nivel inmediatamente |
+| `lib/junk.js` | 6 categorías: Caches, Logs, DerivedData, Simulators, node_modules, .DS_Store |
+| `lib/clean.js` | `rm -rf` con lista de paths del sistema bloqueados |
 
 ---
 
-## 9. Seguridad
+## 7. Decisiones técnicas documentadas
 
-- Agente corre **solo en localhost** — no expuesto a red externa
-- Paths del sistema bloqueados: `/System`, `/usr`, `/bin`, `/sbin`, `/etc`
-- Antes de borrar: el frontend muestra la lista completa con tamaños
-- Confirmación explícita requerida (`DELETE [n items / X GB]?`)
-- Sin telemetría, sin llamadas externas, análisis 100% local
+### Stats del disco — por qué `diskutil` y no `df`
 
----
+`df -k /` en macOS APFS reporta solo el volumen lógico raíz. `FreeSpace` del plist de `diskutil` retorna `0` para volúmenes APFS individuales. El campo correcto es `APFSContainerFree` que representa el espacio libre real del contenedor compartido.
 
-## 10. Plan de desarrollo
+### Diferencia con macOS Storage (~30 GB)
 
-### Fase 1 — Agente Node.js (2-3 días)
-1. Setup del package npm (`macdisk-agent`)
-2. WebSocket server en `localhost:3001` con CORS para Vercel
-3. `stats.js` → `df -h`
-4. `scan.js` → `du` con streaming por WebSocket
-5. `junk.js` → detección por categoría
-6. `clean.js` → `rm` con validación de paths
+Nuestra app muestra más espacio usado que "Ajustes del Sistema" porque:
+1. macOS excluye el Signed System Volume (SSV) de su reporte
+2. Nuestra app incluye purgeable storage, cachés y logs que macOS oculta
 
-### Fase 2 — Frontend (3-4 días)
-1. `base.css` + `layout.css` — shell con prompt animado
-2. Conexión WebSocket + detección de agente
-3. `dashboard.js` — barras ASCII con stats
-4. `filetree.js` — árbol navegable
-5. `scanner.js` + `cleaner.js` — junk list con checkboxes
-6. `terminal.js` — log en tiempo real
+Esta diferencia es **intencional** — el espacio "oculto" contiene basura limpiable.
 
-### Fase 3 — Deploy y QA (1-2 días)
-1. Publish del agente en npm
-2. Deploy del frontend a Vercel
-3. Test de paths seguros (no borrar sistema)
-4. README de instalación y uso
+### Escaneo por niveles en lugar de `du -d 3` directo
+
+`du -d 3` en un disco de 1 TB puede tardar 2+ minutos sin enviar ningún resultado (espera a terminar antes de imprimir). La solución es ejecutar `du -d 1`, luego `du -d 2`, luego `du -d 3` secuencialmente — cada nivel termina en segundos y envía resultados inmediatamente al frontend.
+
+### Límite de 3 reintentos en WebSocket
+
+Sin límite, el browser intentaba reconectar cada 3 segundos indefinidamente cuando el agente no estaba corriendo, generando ruido en el log y consumo innecesario. Después de 3 intentos fallidos se muestra el botón de "Reintentar" manual.
+
+### i18n sin librería externa
+
+Los textos EN/ES se almacenan en un objeto `LANG` en `i18n.js`. La función `t(key)` resuelve el idioma actual. `applyLang()` actualiza todos los elementos del DOM con null-checks para evitar errores en elementos ocultos o no renderizados.
 
 ---
 
-## 11. Criterios de éxito (MVP)
+## 8. Seguridad
 
-- [ ] El usuario instala el agente con un solo comando (`npx macdisk-agent`)
-- [ ] Escaneo del home completo en < 30 segundos
-- [ ] Identificación correcta de al menos 5 categorías de junk
-- [ ] Cero borrados sin confirmación explícita
-- [ ] Frontend accesible desde Vercel sin instalación adicional
+- Agente escucha **solo en 127.0.0.1** — inaccesible desde la red
+- Paths bloqueados permanentemente: `/System` `/usr` `/bin` `/sbin` `/etc` `/private` `/var`
+- Confirmación de usuario requerida antes de cualquier `rm`
+- Sin telemetría, sin requests externos, 100% local
+- `ws@8.18.0` — única dependencia externa. CVE-2026-45736 pendiente de patch upstream; riesgo mínimo dado que el servidor solo acepta conexiones de localhost
 
 ---
 
-*Actualizado: 2026-06-25*
+## 9. Criterios de éxito MVP
+
+- [x] Stats del disco correctos (APFS-aware)
+- [x] Escaneo con resultados progresivos (no blocking)
+- [x] UI en EN y ES con toggle
+- [x] Instrucciones claras de setup en la app
+- [x] Indicador de estado del agente claro (banner con status + descripción)
+- [x] Cero borrados sin confirmación
+- [ ] Detect Junk funcionando end-to-end
+- [ ] Cleaner probado en producción
+- [ ] Publicar agente en npm (`npx macdisk-agent`)
