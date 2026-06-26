@@ -1,29 +1,35 @@
 const { spawn } = require('child_process');
 const readline  = require('readline');
 const os        = require('os');
+const path      = require('path');
 
-// Stream du output line-by-line using spawn+readline
-// Depth 2 only — fast enough for any disk size, covers all major dirs
+const EXCLUDE = ['macbook-disk-analyzer', 'node_modules', '.Trash'];
+
 module.exports = (targetPath, onEntry) => new Promise((resolve) => {
   const root = targetPath || os.homedir();
 
   const du = spawn('du', ['-sk', '-d', '2', root], {
-    // Suppress "permission denied" stderr noise
     stdio: ['ignore', 'pipe', 'ignore']
   });
 
   const rl = readline.createInterface({ input: du.stdout });
 
   rl.on('line', (line) => {
-    const [sizeStr, ...pathParts] = line.split('\t');
-    const path = pathParts.join('\t').trim();
-    const size = parseInt(sizeStr) * 1024;
-    if (path && path !== root && !isNaN(size)) {
-      onEntry({ path, size });
-    }
+    const tabIdx = line.indexOf('\t');
+    if (tabIdx === -1) return;
+    const sizeStr = line.slice(0, tabIdx);
+    const p       = line.slice(tabIdx + 1).trim();
+    const size    = parseInt(sizeStr) * 1024;
+
+    if (!p || p === root || isNaN(size)) return;
+
+    // Skip the app itself and node_modules to avoid noise
+    const base = path.basename(p);
+    if (EXCLUDE.some(ex => base === ex)) return;
+
+    onEntry({ path: p, size });
   });
 
   du.on('close', resolve);
-  // Safety timeout — resolve after 45s no matter what
   setTimeout(resolve, 45000);
 });

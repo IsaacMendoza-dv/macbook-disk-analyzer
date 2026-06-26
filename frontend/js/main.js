@@ -72,14 +72,29 @@ function connect() {
   ws.onmessage = ({ data }) => {
     const { type, data: d } = JSON.parse(data);
     switch (type) {
-      case 'stats':    renderStats(d); break;
-      case 'progress': scanEntries.push(d); break;
-      case 'junk':     renderJunk(d); break;
-      case 'log':      termLog(d.message); break;
+      case 'stats':
+        renderStats(d);
+        break;
+      case 'progress':
+        scanEntries.push(d);
+        // Render every 20 entries so the tree updates in real time
+        if (scanEntries.length % 20 === 0) {
+          renderTree(scanEntries);
+          renderDirs([...scanEntries].sort((a, b) => b.size - a.size));
+        }
+        break;
+      case 'junk':
+        renderJunk(d);
+        break;
+      case 'log':
+        termLog(d.message);
+        break;
       case 'done':
+        // Final render with all entries
         if (scanEntries.length) {
           renderTree(scanEntries);
           renderDirs([...scanEntries].sort((a, b) => b.size - a.size));
+          termLog(`Scan complete — ${scanEntries.length} entries`, 'ok');
           scanEntries = [];
         }
         break;
