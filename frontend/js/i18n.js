@@ -14,7 +14,7 @@ const LANG = {
     banner_status_on:  'Agent connected',
     banner_status_off: 'Agent not running',
     banner_desc_on:    'All sections are available. The agent is reading your Mac\'s disk.',
-    banner_desc_off:   'Start the agent on your Mac to enable disk analysis. Follow the steps below.',
+    banner_desc_off:   'Open this page from http://localhost:3000 (not the Vercel URL) and start the agent. Follow the steps below.',
     prompt_msgs:  ['scan', 'detect junk', 'free space'],
     install_title:'Agent not detected. Follow these steps:',
     install_steps:[
@@ -53,13 +53,14 @@ const LANG = {
 
     // Onboarding guide
     guide_how_title:   'How it works',
-    guide_how_body:    'This app connects to a small agent running on your Mac. The agent reads your disk and sends results here. Nothing leaves your machine — everything is local.',
+    guide_how_body:    'This app runs entirely on your Mac — no data leaves your machine. It requires two things running locally: the frontend (served at http://localhost:3000) and the agent (reads your disk). The Vercel URL is only for reference; always use http://localhost:3000.',
     guide_setup_title: 'First-time setup',
     guide_steps: [
-      { n:'1', title:'Install Node.js',     desc:'Required to run the local agent. Download the LTS version from <a href="https://nodejs.org" target="_blank">nodejs.org</a> and install it.' },
-      { n:'2', title:'Download the project', desc:'Open Terminal (⌘ Space → "Terminal") and run:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code><br>This creates a folder called <strong>macbook-disk-analyzer</strong> in your home directory.' },
-      { n:'3', title:'Start the agent',     desc:'Still in Terminal, run these two commands:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install && node server.js</code><br>The first run downloads dependencies (~2 MB). The second line starts the agent.' },
-      { n:'4', title:'Come back here',      desc:'Keep Terminal open in the background. The indicator above will turn green when connected. Refresh this page if needed.' },
+      { n:'1', title:'Install Node.js',      desc:'Required to run the local agent. Download the LTS version from <a href="https://nodejs.org" target="_blank">nodejs.org</a> and install it.' },
+      { n:'2', title:'Download the project', desc:'Open Terminal (⌘ Space → "Terminal") and run:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code>' },
+      { n:'3', title:'Start the agent',      desc:'In Terminal, run:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install</code><br><code>node server.js</code>' },
+      { n:'4', title:'Open the app locally', desc:'Because browsers block <code>ws://</code> connections from <code>https://</code> pages, you must open the app from your local machine. In a new Terminal tab run:<br><code>cd macbook-disk-analyzer/frontend</code><br><code>npx serve .</code><br>Then open <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> — <strong>not</strong> the Vercel URL.' },
+      { n:'5', title:'Keep both tabs open',  desc:'Terminal tab 1: agent running. Terminal tab 2: frontend server running. The indicator above will turn green when connected.' },
     ],
     guide_sections_title: 'What each section does',
     guide_sections: [
@@ -85,7 +86,7 @@ const LANG = {
     banner_status_on:  'Agente conectado',
     banner_status_off: 'Agente no iniciado',
     banner_desc_on:    'Todas las secciones están disponibles. El agente está leyendo el disco de tu Mac.',
-    banner_desc_off:   'Inicia el agente en tu Mac para habilitar el análisis de disco. Sigue los pasos de abajo.',
+    banner_desc_off:   'Abre esta página desde http://localhost:3000 (no la URL de Vercel) e inicia el agente. Sigue los pasos de abajo.',
     prompt_msgs:  ['escanear', 'detectar basura', 'liberar espacio'],
     install_title:'Agente no detectado. Sigue estos pasos:',
     install_steps:[
@@ -124,13 +125,14 @@ const LANG = {
 
     // Onboarding guide
     guide_how_title:   'Cómo funciona',
-    guide_how_body:    'Esta app se conecta a un pequeño agente que corre en tu Mac. El agente lee tu disco y envía los resultados aquí. Nada sale a internet — todo es local.',
+    guide_how_body:    'Esta app corre completamente en tu Mac — ningún dato sale de tu máquina. Requiere dos cosas corriendo localmente: el frontend (en http://localhost:3000) y el agente (lee tu disco). La URL de Vercel es solo de referencia; siempre usa http://localhost:3000.',
     guide_setup_title: 'Configuración inicial',
     guide_steps: [
-      { n:'1', title:'Instala Node.js',      desc:'Necesario para correr el agente. Descarga la versión LTS en <a href="https://nodejs.org" target="_blank">nodejs.org</a> e instálala.' },
-      { n:'2', title:'Descarga el proyecto',  desc:'Abre Terminal (⌘ Espacio → "Terminal") y ejecuta:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code><br>Esto crea una carpeta llamada <strong>macbook-disk-analyzer</strong> en tu directorio home.' },
-      { n:'3', title:'Inicia el agente',      desc:'En la misma Terminal, ejecuta estos dos comandos:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install && node server.js</code><br>La primera ejecución descarga dependencias (~2 MB). La segunda línea inicia el agente.' },
-      { n:'4', title:'Vuelve aquí',           desc:'Deja Terminal abierto en segundo plano. El indicador de arriba se pondrá verde cuando esté conectado. Recarga la página si es necesario.' },
+      { n:'1', title:'Instala Node.js',             desc:'Necesario para correr el agente. Descarga la versión LTS en <a href="https://nodejs.org" target="_blank">nodejs.org</a> e instálala.' },
+      { n:'2', title:'Descarga el proyecto',          desc:'Abre Terminal (⌘ Espacio → "Terminal") y ejecuta:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code>' },
+      { n:'3', title:'Inicia el agente',              desc:'En Terminal, ejecuta:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install</code><br><code>node server.js</code>' },
+      { n:'4', title:'Abre la app localmente',        desc:'Los browsers bloquean conexiones <code>ws://</code> desde páginas <code>https://</code>, por eso debes abrir la app desde tu máquina. En una nueva pestaña de Terminal ejecuta:<br><code>cd macbook-disk-analyzer/frontend</code><br><code>npx serve .</code><br>Luego abre <a href="http://localhost:3000" target="_blank">http://localhost:3000</a> — <strong>no</strong> la URL de Vercel.' },
+      { n:'5', title:'Deja ambas pestañas abiertas', desc:'Pestaña 1 de Terminal: agente corriendo. Pestaña 2: servidor del frontend. El indicador de arriba se pondrá verde cuando esté conectado.' },
     ],
     guide_sections_title: 'Qué hace cada sección',
     guide_sections: [
