@@ -36,33 +36,42 @@
 
     <!-- Welcome -->
     <div id="view-welcome" class="view active">
-      <pre>
+      <pre style="color:var(--accent); font-size:11px; margin-bottom:20px;">
  __  __           ____  _     _
 |  \/  | __ _  __|  _ \(_)___| | __
 | |\/| |/ _` |/ __| | | | / __| |/ /
 | |  | | (_| | (__| |_| | \__ \   &lt;
 |_|  |_|\__,_|\___|____/|_|___/_|\_\
+      Analyzer v1.0 — Storage Intelligence</pre>
 
-      Analyzer v1.0 — Storage Intelligence
-      </pre>
-      <div class="prompt-line">
+      <div class="prompt-line" style="margin-bottom:28px;">
         <span class="ps1">user@macbook:~$</span>
         <span id="welcome-text"></span>
         <span class="cursor"></span>
       </div>
 
-      <!-- Agent install instructions -->
-      <div id="agent-install" style="display:none; margin-top:28px;">
-        <p class="install-title warn" style="margin-bottom:12px;"></p>
-        <ol style="list-style:none; display:flex; flex-direction:column; gap:8px; color:var(--text);">
-          <li class="install-step"></li>
-          <li class="install-step"></li>
-          <li class="install-step"></li>
-        </ol>
-        <div style="margin:12px 0 8px; background:var(--surface); border:1px solid var(--border); padding:10px 16px;">
-          <code id="install-cmd" style="color:var(--accent)">cd agent &amp;&amp; npm install &amp;&amp; node server.js</code>
+      <!-- HOW IT WORKS — always visible -->
+      <div class="guide">
+
+        <p id="guide-how-title" class="section-title"></p>
+        <p id="guide-how-body" class="muted" style="line-height:1.9; margin-bottom:24px;"></p>
+
+        <p id="guide-setup-title" class="section-title"></p>
+        <div class="guide-steps" id="guide-steps"></div>
+
+        <!-- agent status / install block -->
+        <div id="agent-install" style="margin-top:4px;">
+          <div style="background:var(--surface); border:1px solid var(--border); padding:12px 18px; margin:12px 0;">
+            <code style="color:var(--accent)" id="install-cmd">cd agent &amp;&amp; npm install &amp;&amp; node server.js</code>
+          </div>
+          <p class="install-note muted" style="font-size:11px;"></p>
         </div>
-        <p class="install-note muted"></p>
+
+        <p id="guide-sections-title" class="section-title" style="margin-top:28px;"></p>
+        <div id="guide-sections" class="guide-sections"></div>
+
+        <p id="guide-safe-title" class="section-title" style="margin-top:28px;"></p>
+        <p id="guide-safe-body" class="muted" style="line-height:1.9;"></p>
       </div>
     </div>
 

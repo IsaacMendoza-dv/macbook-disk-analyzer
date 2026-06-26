@@ -1,6 +1,6 @@
-// main.js — init, WebSocket connection, view router
+// main.js — init, WebSocket, view router
 
-const WS_URL = 'ws://127.0.0.1:3001';
+const WS_URL       = 'ws://127.0.0.1:3001';
 const RECONNECT_MS = 4000;
 const MAX_RETRIES  = 3;
 
@@ -62,14 +62,11 @@ function connect() {
       setTimeout(connect, RECONNECT_MS);
     } else {
       termLog(t('log_agent_stopped'), 'err');
-      document.getElementById('agent-install').style.display = 'block';
       showRetryBtn();
     }
   };
 
-  ws.onerror = () => {
-    // handled by onclose
-  };
+  ws.onerror = () => { /* handled by onclose */ };
 
   ws.onmessage = ({ data }) => {
     const { type, data: d } = JSON.parse(data);
@@ -80,9 +77,8 @@ function connect() {
       case 'log':      termLog(d.message); break;
       case 'done':
         if (scanEntries.length) {
-          const sorted = [...scanEntries].sort((a, b) => b.size - a.size);
           renderTree(scanEntries);
-          renderDirs(sorted);
+          renderDirs([...scanEntries].sort((a, b) => b.size - a.size));
           scanEntries = [];
         }
         break;
@@ -90,10 +86,15 @@ function connect() {
   };
 }
 
+function setStatus(connected) {
+  const el = document.getElementById('agent-status');
+  el.className = connected ? 'connected' : 'disconnected';
+  el.querySelector('.label').textContent = connected ? t('agent_on') : t('agent_off');
+}
+
 function showRetryBtn() {
-  let btn = document.getElementById('btn-retry');
-  if (btn) return;
-  btn = document.createElement('button');
+  if (document.getElementById('btn-retry')) return;
+  const btn = document.createElement('button');
   btn.id = 'btn-retry';
   btn.style.marginTop = '16px';
   btn.textContent = t('btn_retry');
@@ -108,12 +109,6 @@ function showRetryBtn() {
 
 function hideRetryBtn() {
   document.getElementById('btn-retry')?.remove();
-}
-
-function setStatus(connected) {
-  const el = document.getElementById('agent-status');
-  el.className = connected ? 'connected' : 'disconnected';
-  el.querySelector('.label').textContent = connected ? t('agent_on') : t('agent_off');
 }
 
 window.wsSend = (msg) => ws?.readyState === WebSocket.OPEN && ws.send(JSON.stringify(msg));

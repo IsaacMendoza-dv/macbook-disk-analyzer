@@ -44,6 +44,26 @@ const LANG = {
     log_cleaning:     (n) => `Cleaning ${n} item(s)...`,
     log_agent_stopped:'Agent not found. Start it on your Mac and click Retry.',
     btn_retry:        '[ RETRY CONNECTION ]',
+
+    // Onboarding guide
+    guide_how_title:   'How it works',
+    guide_how_body:    'MacDisk Analyzer is a web app that connects to a small local agent running on your Mac. The agent reads your disk using native macOS commands (du, df, find) and sends the results here. Nothing is uploaded to the internet — everything happens on your machine.',
+    guide_setup_title: 'Setup — 4 steps (one time only)',
+    guide_steps: [
+      { n:'1', title:'Install Node.js 18+', body:'Download and install from <a href="https://nodejs.org" target="_blank" style="color:var(--accent2)">nodejs.org</a> if you don\'t have it. Node.js is required to run the local agent.' },
+      { n:'2', title:'Open Terminal',        body:'Press <strong>⌘ + Space</strong>, type <strong>Terminal</strong> and press Enter.' },
+      { n:'3', title:'Start the agent',      body:'In Terminal, navigate to the <code>agent/</code> folder and run:<br><br><code>npm install</code> &nbsp;(first time only)<br><code>node server.js</code> &nbsp;(starts the agent)' },
+      { n:'4', title:'Keep Terminal open',   body:'Leave the Terminal window running in the background. The green dot in the header will turn on when the connection is established. Refresh this page if needed.' },
+    ],
+    guide_sections_title: 'What each section does',
+    guide_sections: [
+      { name:'dashboard',  desc:'Shows total, used and free disk space with visual progress bars.' },
+      { name:'file tree',  desc:'Browse your entire home directory sorted by size. Click any folder to expand it.' },
+      { name:'scanner',    desc:'Scans for junk: app caches, system logs, Xcode DerivedData, node_modules and .DS_Store files.' },
+      { name:'cleaner',    desc:'Select items from the scanner results and delete them. Always asks for confirmation before removing anything.' },
+    ],
+    guide_safe_title: 'Is it safe?',
+    guide_safe_body:  'The agent only runs locally on your Mac (127.0.0.1) and is never reachable from the internet. System folders (/System, /usr, /bin) are permanently blocked from deletion. Every delete action requires your explicit confirmation.',
   },
 
   es: {
@@ -89,6 +109,26 @@ const LANG = {
     log_cleaning:     (n) => `Eliminando ${n} elemento(s)...`,
     log_agent_stopped:'Agente no encontrado. Inícialo en tu Mac y presiona Reintentar.',
     btn_retry:        '[ REINTENTAR CONEXIÓN ]',
+
+    // Onboarding guide
+    guide_how_title:   'Cómo funciona',
+    guide_how_body:    'MacDisk Analyzer es una app web que se conecta a un pequeño agente local que corre en tu Mac. El agente lee tu disco con comandos nativos de macOS (du, df, find) y envía los resultados aquí. Nada sale a internet — todo ocurre en tu máquina.',
+    guide_setup_title: 'Configuración — 4 pasos (solo la primera vez)',
+    guide_steps: [
+      { n:'1', title:'Instala Node.js 18+',  body:'Descárgalo en <a href="https://nodejs.org" target="_blank" style="color:var(--accent2)">nodejs.org</a> si no lo tienes. Node.js es necesario para correr el agente local.' },
+      { n:'2', title:'Abre Terminal',         body:'Presiona <strong>⌘ + Espacio</strong>, escribe <strong>Terminal</strong> y presiona Enter.' },
+      { n:'3', title:'Inicia el agente',      body:'En Terminal, navega a la carpeta <code>agent/</code> y ejecuta:<br><br><code>npm install</code> &nbsp;(solo la primera vez)<br><code>node server.js</code> &nbsp;(inicia el agente)' },
+      { n:'4', title:'Deja Terminal abierto', body:'Deja la ventana de Terminal corriendo en segundo plano. El punto verde en el encabezado se activará cuando la conexión se establezca. Recarga esta página si es necesario.' },
+    ],
+    guide_sections_title: 'Qué hace cada sección',
+    guide_sections: [
+      { name:'resumen',   desc:'Muestra el espacio total, usado y libre con barras de progreso visuales.' },
+      { name:'árbol',     desc:'Navega todo tu directorio home ordenado por tamaño. Haz clic en cualquier carpeta para expandirla.' },
+      { name:'escáner',   desc:'Busca basura: cachés de apps, logs del sistema, Xcode DerivedData, node_modules y archivos .DS_Store.' },
+      { name:'limpieza',  desc:'Selecciona elementos del escáner y elimínalos. Siempre pide confirmación antes de borrar.' },
+    ],
+    guide_safe_title: '¿Es seguro?',
+    guide_safe_body:  'El agente solo corre localmente en tu Mac (127.0.0.1) y nunca es accesible desde internet. Las carpetas del sistema (/System, /usr, /bin) están bloqueadas permanentemente. Toda acción de borrado requiere tu confirmación explícita.',
   }
 };
 
@@ -153,6 +193,41 @@ function applyLang() {
   if (retryBtn) retryBtn.textContent = t('btn_retry');
 
   set('lang-toggle', currentLang === 'en' ? '🌐 ES' : '🌐 EN');
+
+  renderGuide();
+}
+
+function renderGuide() {
+  const set  = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+
+  set('guide-how-title',      t('guide_how_title'));
+  set('guide-how-body',       t('guide_how_body'));
+  set('guide-setup-title',    t('guide_setup_title'));
+  set('guide-sections-title', t('guide_sections_title'));
+  set('guide-safe-title',     t('guide_safe_title'));
+  set('guide-safe-body',      t('guide_safe_body'));
+
+  const stepsEl = document.getElementById('guide-steps');
+  if (stepsEl) {
+    stepsEl.innerHTML = t('guide_steps').map((s, i) => `
+      <div class="guide-step ${i === 2 ? 'active-step' : ''}">
+        <span class="step-num">${s.n}</span>
+        <div class="step-body"><strong>${s.title}</strong><br>${s.body}</div>
+      </div>`).join('');
+  }
+
+  const sectionsEl = document.getElementById('guide-sections');
+  if (sectionsEl) {
+    sectionsEl.innerHTML = t('guide_sections').map(s => `
+      <div class="guide-section-row">
+        <span class="gs-name">${s.name}</span>
+        <span class="gs-desc">${s.desc}</span>
+      </div>`).join('');
+  }
+
+  // install note
+  const ni = document.querySelector('#agent-install .install-note');
+  if (ni) ni.textContent = t('install_note');
 }
 
 window.t          = t;

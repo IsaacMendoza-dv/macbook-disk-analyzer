@@ -108,3 +108,43 @@
 }
 .clean-summary .selected-info { color: var(--muted); }
 .clean-summary .freed-info    { color: var(--warn); }
+
+
+/* ── Onboarding guide ── */
+.guide { max-width: 680px; }
+
+.guide-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
+.guide-step {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: start;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.guide-step .step-num {
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 14px;
+  padding-top: 1px;
+}
+.guide-step .step-body { color: var(--text); }
+.guide-step .step-body strong { color: var(--accent2); }
+.guide-step .step-body code  { color: var(--accent); background: rgba(0,255,65,0.07); padding: 1px 5px; }
+.guide-step.active-step { border-color: var(--accent); }
+
+.guide-sections { display: flex; flex-direction: column; gap: 6px; }
+.guide-section-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 12px;
+  font-size: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(0,255,65,0.06);
+  line-height: 1.6;
+}
+.guide-section-row .gs-name { color: var(--accent2); }
+.guide-section-row .gs-desc { color: var(--muted); }
