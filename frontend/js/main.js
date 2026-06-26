@@ -28,6 +28,7 @@ document.querySelectorAll('#nav a').forEach(link => {
 let mi = 0, ci = 0;
 const welcomeText = document.getElementById('welcome-text');
 function typePrompt() {
+  if (!welcomeText) return;
   const msgs = t('prompt_msgs');
   if (ci < msgs[mi].length) {
     welcomeText.textContent += msgs[mi][ci++];
