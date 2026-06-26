@@ -87,9 +87,18 @@ function connect() {
 }
 
 function setStatus(connected) {
+  // Header badge
   const el = document.getElementById('agent-status');
   el.className = connected ? 'connected' : 'disconnected';
   el.querySelector('.label').textContent = connected ? t('agent_on') : t('agent_off');
+
+  // Welcome banner
+  const banner = document.getElementById('agent-banner');
+  if (banner) {
+    banner.className = `agent-banner ${connected ? 'connected' : 'disconnected'}`;
+    document.getElementById('banner-label').textContent =
+      connected ? t('banner_on') : t('banner_off');
+  }
 }
 
 function showRetryBtn() {

@@ -9,6 +9,8 @@ const LANG = {
     nav_cleaner:  'cleaner',
     agent_on:     'agent connected',
     agent_off:    'agent disconnected',
+    banner_on:    '● Agent connected — you can now use all sections',
+    banner_off:   '● Agent not running — follow the steps below to get started',
     prompt_msgs:  ['scan', 'detect junk', 'free space'],
     install_title:'Agent not detected. Follow these steps:',
     install_steps:[
@@ -47,23 +49,23 @@ const LANG = {
 
     // Onboarding guide
     guide_how_title:   'How it works',
-    guide_how_body:    'MacDisk Analyzer is a web app that connects to a small local agent running on your Mac. The agent reads your disk using native macOS commands (du, df, find) and sends the results here. Nothing is uploaded to the internet — everything happens on your machine.',
-    guide_setup_title: 'Setup — 4 steps (one time only)',
+    guide_how_body:    'This app connects to a small agent running on your Mac. The agent reads your disk and sends results here. Nothing leaves your machine — everything is local.',
+    guide_setup_title: 'First-time setup',
     guide_steps: [
-      { n:'1', title:'Install Node.js 18+', body:'Download and install from <a href="https://nodejs.org" target="_blank" style="color:var(--accent2)">nodejs.org</a> if you don\'t have it. Node.js is required to run the local agent.' },
-      { n:'2', title:'Open Terminal',        body:'Press <strong>⌘ + Space</strong>, type <strong>Terminal</strong> and press Enter.' },
-      { n:'3', title:'Start the agent',      body:'In Terminal, navigate to the <code>agent/</code> folder and run:<br><br><code>npm install</code> &nbsp;(first time only)<br><code>node server.js</code> &nbsp;(starts the agent)' },
-      { n:'4', title:'Keep Terminal open',   body:'Leave the Terminal window running in the background. The green dot in the header will turn on when the connection is established. Refresh this page if needed.' },
+      { n:'1', title:'Install Node.js',     desc:'Required to run the local agent. Download the LTS version from <a href="https://nodejs.org" target="_blank">nodejs.org</a> and install it.' },
+      { n:'2', title:'Open Terminal',       desc:'Press <strong>⌘ Space</strong>, type <strong>Terminal</strong>, press Enter.' },
+      { n:'3', title:'Start the agent',     desc:'Copy and paste this into Terminal:<br><code>cd agent && npm install && node server.js</code><br>The first run will download dependencies (~2 MB). The second line starts the agent.' },
+      { n:'4', title:'Come back here',      desc:'Keep Terminal open in the background. The indicator above will turn green when the connection is live. If it stays red, refresh the page.' },
     ],
     guide_sections_title: 'What each section does',
     guide_sections: [
-      { name:'dashboard',  desc:'Shows total, used and free disk space with visual progress bars.' },
-      { name:'file tree',  desc:'Browse your entire home directory sorted by size. Click any folder to expand it.' },
-      { name:'scanner',    desc:'Scans for junk: app caches, system logs, Xcode DerivedData, node_modules and .DS_Store files.' },
-      { name:'cleaner',    desc:'Select items from the scanner results and delete them. Always asks for confirmation before removing anything.' },
+      { name:'Dashboard', desc:'Total, used and free disk space at a glance.' },
+      { name:'File Tree',  desc:'Your home folder sorted by size. Click any folder to see what\'s inside.' },
+      { name:'Scanner',    desc:'Finds junk automatically: app caches, logs, Xcode files, orphan node_modules.' },
+      { name:'Cleaner',    desc:'Select what to delete from the scanner results. Always asks for confirmation.' },
     ],
     guide_safe_title: 'Is it safe?',
-    guide_safe_body:  'The agent only runs locally on your Mac (127.0.0.1) and is never reachable from the internet. System folders (/System, /usr, /bin) are permanently blocked from deletion. Every delete action requires your explicit confirmation.',
+    guide_safe_body:  'The agent only listens on 127.0.0.1 — it is never reachable from the internet. System folders (/System, /usr, /bin) are permanently blocked from deletion. Nothing is deleted without your explicit confirmation.',
   },
 
   es: {
@@ -74,6 +76,8 @@ const LANG = {
     nav_cleaner:  'limpieza',
     agent_on:     'agente conectado',
     agent_off:    'agente desconectado',
+    banner_on:    '● Agente conectado — ya puedes usar todas las secciones',
+    banner_off:   '● Agente no iniciado — sigue los pasos de abajo para comenzar',
     prompt_msgs:  ['escanear', 'detectar basura', 'liberar espacio'],
     install_title:'Agente no detectado. Sigue estos pasos:',
     install_steps:[
@@ -112,23 +116,23 @@ const LANG = {
 
     // Onboarding guide
     guide_how_title:   'Cómo funciona',
-    guide_how_body:    'MacDisk Analyzer es una app web que se conecta a un pequeño agente local que corre en tu Mac. El agente lee tu disco con comandos nativos de macOS (du, df, find) y envía los resultados aquí. Nada sale a internet — todo ocurre en tu máquina.',
-    guide_setup_title: 'Configuración — 4 pasos (solo la primera vez)',
+    guide_how_body:    'Esta app se conecta a un pequeño agente que corre en tu Mac. El agente lee tu disco y envía los resultados aquí. Nada sale a internet — todo es local.',
+    guide_setup_title: 'Configuración inicial',
     guide_steps: [
-      { n:'1', title:'Instala Node.js 18+',  body:'Descárgalo en <a href="https://nodejs.org" target="_blank" style="color:var(--accent2)">nodejs.org</a> si no lo tienes. Node.js es necesario para correr el agente local.' },
-      { n:'2', title:'Abre Terminal',         body:'Presiona <strong>⌘ + Espacio</strong>, escribe <strong>Terminal</strong> y presiona Enter.' },
-      { n:'3', title:'Inicia el agente',      body:'En Terminal, navega a la carpeta <code>agent/</code> y ejecuta:<br><br><code>npm install</code> &nbsp;(solo la primera vez)<br><code>node server.js</code> &nbsp;(inicia el agente)' },
-      { n:'4', title:'Deja Terminal abierto', body:'Deja la ventana de Terminal corriendo en segundo plano. El punto verde en el encabezado se activará cuando la conexión se establezca. Recarga esta página si es necesario.' },
+      { n:'1', title:'Instala Node.js',      desc:'Necesario para correr el agente. Descarga la versión LTS en <a href="https://nodejs.org" target="_blank">nodejs.org</a> e instálala.' },
+      { n:'2', title:'Abre Terminal',         desc:'Presiona <strong>⌘ Espacio</strong>, escribe <strong>Terminal</strong> y presiona Enter.' },
+      { n:'3', title:'Inicia el agente',      desc:'Copia y pega esto en Terminal:<br><code>cd agent && npm install && node server.js</code><br>La primera ejecución descarga dependencias (~2 MB). La segunda línea inicia el agente.' },
+      { n:'4', title:'Vuelve aquí',           desc:'Deja Terminal abierto en segundo plano. El indicador de arriba se pondrá verde cuando la conexión esté activa. Si sigue rojo, recarga la página.' },
     ],
     guide_sections_title: 'Qué hace cada sección',
     guide_sections: [
-      { name:'resumen',   desc:'Muestra el espacio total, usado y libre con barras de progreso visuales.' },
-      { name:'árbol',     desc:'Navega todo tu directorio home ordenado por tamaño. Haz clic en cualquier carpeta para expandirla.' },
-      { name:'escáner',   desc:'Busca basura: cachés de apps, logs del sistema, Xcode DerivedData, node_modules y archivos .DS_Store.' },
-      { name:'limpieza',  desc:'Selecciona elementos del escáner y elimínalos. Siempre pide confirmación antes de borrar.' },
+      { name:'Resumen',  desc:'Espacio total, usado y libre de un vistazo.' },
+      { name:'Árbol',    desc:'Tu carpeta home ordenada por tamaño. Haz clic en cualquier carpeta para ver qué hay adentro.' },
+      { name:'Escáner',  desc:'Encuentra basura automáticamente: cachés de apps, logs, archivos de Xcode, node_modules huérfanos.' },
+      { name:'Limpieza', desc:'Selecciona qué eliminar de los resultados del escáner. Siempre pide confirmación.' },
     ],
     guide_safe_title: '¿Es seguro?',
-    guide_safe_body:  'El agente solo corre localmente en tu Mac (127.0.0.1) y nunca es accesible desde internet. Las carpetas del sistema (/System, /usr, /bin) están bloqueadas permanentemente. Toda acción de borrado requiere tu confirmación explícita.',
+    guide_safe_body:  'El agente solo escucha en 127.0.0.1 — nunca es accesible desde internet. Las carpetas del sistema (/System, /usr, /bin) están bloqueadas permanentemente. Nada se elimina sin tu confirmación explícita.',
   }
 };
 
@@ -198,7 +202,7 @@ function applyLang() {
 }
 
 function renderGuide() {
-  const set  = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
 
   set('guide-how-title',      t('guide_how_title'));
   set('guide-how-body',       t('guide_how_body'));
@@ -210,9 +214,12 @@ function renderGuide() {
   const stepsEl = document.getElementById('guide-steps');
   if (stepsEl) {
     stepsEl.innerHTML = t('guide_steps').map((s, i) => `
-      <div class="guide-step ${i === 2 ? 'active-step' : ''}">
+      <div class="guide-step ${i === 2 ? 'highlight' : ''}">
         <span class="step-num">${s.n}</span>
-        <div class="step-body"><strong>${s.title}</strong><br>${s.body}</div>
+        <div>
+          <div class="step-title">${s.title}</div>
+          <div class="step-desc">${s.desc}</div>
+        </div>
       </div>`).join('');
   }
 
@@ -224,10 +231,6 @@ function renderGuide() {
         <span class="gs-desc">${s.desc}</span>
       </div>`).join('');
   }
-
-  // install note
-  const ni = document.querySelector('#agent-install .install-note');
-  if (ni) ni.textContent = t('install_note');
 }
 
 window.t          = t;
