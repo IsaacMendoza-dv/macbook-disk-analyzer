@@ -1,33 +1,46 @@
-const { spawn } = require('child_process');
-const readline  = require('readline');
-const os        = require('os');
-const path      = require('path');
+const { execFile, spawn } = require('child_process');
+const readline = require('readline');
+const os   = require('os');
+const path = require('path');
+const fs   = require('fs');
 
-const EXCLUDE = ['macbook-disk-analyzer', '.Trash'];
+const EXCLUDE = new Set(['macbook-disk-analyzer', '.Trash', 'node_modules']);
 
-module.exports = (targetPath, onEntry) => new Promise((resolve) => {
+// Get size of a single path with du -sk
+const duSize = (p) => new Promise((res) => {
+  execFile('du', ['-sk', p], { stdio: ['ignore', 'pipe', 'ignore'] }, (err, stdout) => {
+    if (err) return res(0);
+    const kb = parseInt(stdout.split('\t')[0]);
+    res(isNaN(kb) ? 0 : kb * 1024);
+  });
+});
+
+module.exports = async (targetPath, onEntry) => {
   const root = targetPath || os.homedir();
 
-  // -k: 1024-byte blocks  -d 2: max depth 2
-  // NOTE: do NOT combine -s with -d — they are mutually exclusive on macOS
-  const du = spawn('du', ['-k', '-d', '2', root], {
-    stdio: ['ignore', 'pipe', 'ignore']
-  });
+  // Level 1: read home dir entries
+  let entries;
+  try { entries = fs.readdirSync(root); } catch { return; }
 
-  const rl = readline.createInterface({ input: du.stdout });
+  for (const name of entries) {
+    if (EXCLUDE.has(name) || name.startsWith('.')) continue;
+    const full = path.join(root, name);
+    const size = await duSize(full);
+    if (size > 0) onEntry({ path: full, size });
 
-  rl.on('line', (line) => {
-    const tabIdx = line.indexOf('\t');
-    if (tabIdx === -1) return;
-    const size = parseInt(line.slice(0, tabIdx)) * 1024;
-    const p    = line.slice(tabIdx + 1).trim();
-
-    if (!p || p === root || isNaN(size)) return;
-    if (EXCLUDE.some(ex => path.basename(p) === ex)) return;
-
-    onEntry({ path: p, size });
-  });
-
-  du.on('close', resolve);
-  setTimeout(resolve, 45000);
-});
+    // Level 2: subdirectories
+    try {
+      const subs = fs.readdirSync(full);
+      for (const sub of subs) {
+        if (EXCLUDE.has(sub) || sub.startsWith('.')) continue;
+        const subFull = path.join(full, sub);
+        try {
+          if (fs.statSync(subFull).isDirectory()) {
+            const subSize = await duSize(subFull);
+            if (subSize > 0) onEntry({ path: subFull, size: subSize });
+          }
+        } catch {}
+      }
+    } catch {}
+  }
+};
