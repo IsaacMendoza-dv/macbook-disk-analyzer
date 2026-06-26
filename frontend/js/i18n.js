@@ -141,55 +141,73 @@ function setLang(lang) {
 }
 
 function applyLang() {
-  // Nav links
-  document.querySelector('[data-view="welcome"]').textContent  = t('nav_home');
-  document.querySelector('[data-view="dashboard"]').textContent = t('nav_dashboard');
-  document.querySelector('[data-view="filetree"]').textContent  = t('nav_filetree');
-  document.querySelector('[data-view="scanner"]').textContent   = t('nav_scanner');
-  document.querySelector('[data-view="cleaner"]').textContent   = t('nav_cleaner');
+  const set = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+  const setH = (id, html) => { const el = document.getElementById(id); if (el) el.innerHTML = html; };
+  const setQ = (sel, text) => { const el = document.querySelector(sel); if (el) el.textContent = text; };
+
+  // Nav
+  setQ('[data-view="welcome"]',   t('nav_home'));
+  setQ('[data-view="dashboard"]', t('nav_dashboard'));
+  setQ('[data-view="filetree"]',  t('nav_filetree'));
+  setQ('[data-view="scanner"]',   t('nav_scanner'));
+  setQ('[data-view="cleaner"]',   t('nav_cleaner'));
 
   // Agent status
   const statusEl = document.getElementById('agent-status');
-  const connected = statusEl.classList.contains('connected');
-  statusEl.querySelector('.label').textContent = connected ? t('agent_on') : t('agent_off');
+  if (statusEl) {
+    const connected = statusEl.classList.contains('connected');
+    statusEl.querySelector('.label').textContent = connected ? t('agent_on') : t('agent_off');
+  }
 
-  // Install instructions
+  // Install instructions (only if visible)
   const box = document.getElementById('agent-install');
-  box.querySelector('.install-title').textContent = t('install_title');
-  const steps = box.querySelectorAll('.install-step');
-  t('install_steps').forEach((s, i) => { steps[i].innerHTML = s; });
-  box.querySelector('.install-note').textContent = t('install_note');
+  if (box) {
+    const titleEl = box.querySelector('.install-title');
+    if (titleEl) titleEl.textContent = t('install_title');
+    box.querySelectorAll('.install-step').forEach((el, i) => {
+      el.innerHTML = t('install_steps')[i] || '';
+    });
+    const noteEl = box.querySelector('.install-note');
+    if (noteEl) noteEl.textContent = t('install_note');
+  }
 
-  // Section titles
-  document.getElementById('title-dashboard').textContent = t('dash_title');
-  document.getElementById('title-dirs').textContent      = t('dash_dirs');
-  document.getElementById('label-total').textContent     = t('label_total');
-  document.getElementById('label-used').textContent      = t('label_used');
-  document.getElementById('label-free').textContent      = t('label_free');
+  // Dashboard
+  set('title-dashboard', t('dash_title'));
+  set('title-dirs',      t('dash_dirs'));
+  set('label-total',     t('label_total'));
+  set('label-used',      t('label_used'));
+  set('label-free',      t('label_free'));
 
-  document.getElementById('title-filetree').textContent  = t('tree_title');
-  document.getElementById('hint-filetree').textContent   = t('tree_hint');
+  // File tree
+  set('title-filetree', t('tree_title'));
+  set('hint-filetree',  t('tree_hint'));
 
-  document.getElementById('title-scanner').textContent   = t('scan_title');
-  document.getElementById('hint-scanner').textContent    = t('scan_hint');
-  document.getElementById('btn-scan').textContent        = t('btn_scan');
-  document.getElementById('btn-junk').textContent        = t('btn_junk');
-  document.getElementById('th-category').textContent     = t('col_category');
-  document.getElementById('th-path').textContent         = t('col_path');
-  document.getElementById('th-size').textContent         = t('col_size');
+  // Scanner
+  set('title-scanner', t('scan_title'));
+  set('hint-scanner',  t('scan_hint'));
+  set('btn-scan',      t('btn_scan'));
+  set('btn-junk',      t('btn_junk'));
+  set('th-category',   t('col_category'));
+  set('th-path',       t('col_path'));
+  set('th-size',       t('col_size'));
 
-  document.getElementById('title-cleaner').textContent   = t('clean_title');
-  document.getElementById('hint-cleaner').textContent    = t('clean_hint');
-  document.getElementById('btn-clean').textContent       = t('btn_delete');
+  // Cleaner
+  set('title-cleaner', t('clean_title'));
+  set('hint-cleaner',  t('clean_hint'));
+  set('btn-clean',     t('btn_delete'));
 
   const countEl = document.getElementById('clean-count');
-  if (countEl.dataset.count === '0') countEl.textContent = t('clean_none');
+  if (countEl && countEl.dataset.count === '0') countEl.textContent = t('clean_none');
 
-  // Toggle button state
-  document.getElementById('lang-toggle').textContent =
-    currentLang === 'en' ? '🌐 ES' : '🌐 EN';
+  // Retry button (if present)
+  const retryBtn = document.getElementById('btn-retry');
+  if (retryBtn) retryBtn.textContent = t('btn_retry');
+
+  // Toggle button label
+  set('lang-toggle', currentLang === 'en' ? '🌐 ES' : '🌐 EN');
 }
 
 window.t = t;
 window.setLang = setLang;
 window.applyLang = applyLang;
+Object.defineProperty(window, 'currentLang', { get: () => currentLang });
