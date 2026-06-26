@@ -37,10 +37,16 @@
     <!-- Welcome -->
     <div id="view-welcome" class="view active">
 
-      <!-- Agent connection status — big and clear -->
+      <!-- Agent connection status -->
       <div id="agent-banner" class="agent-banner disconnected">
-        <span class="banner-dot"></span>
-        <span id="banner-label"></span>
+        <div class="banner-icon">
+          <span class="banner-dot"></span>
+        </div>
+        <div class="banner-content">
+          <span class="banner-status" id="banner-status"></span>
+          <span class="banner-desc"  id="banner-label"></span>
+        </div>
+        <div class="banner-action" id="banner-action"></div>
       </div>
 
       <!-- Step-by-step guide — always visible -->

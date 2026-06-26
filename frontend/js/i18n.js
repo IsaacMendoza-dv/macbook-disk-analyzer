@@ -11,6 +11,10 @@ const LANG = {
     agent_off:    'agent disconnected',
     banner_on:    '● Agent connected — you can now use all sections',
     banner_off:   '● Agent not running — follow the steps below to get started',
+    banner_status_on:  'Agent connected',
+    banner_status_off: 'Agent not running',
+    banner_desc_on:    'All sections are available. The agent is reading your Mac\'s disk.',
+    banner_desc_off:   'Start the agent on your Mac to enable disk analysis. Follow the steps below.',
     prompt_msgs:  ['scan', 'detect junk', 'free space'],
     install_title:'Agent not detected. Follow these steps:',
     install_steps:[
@@ -78,6 +82,10 @@ const LANG = {
     agent_off:    'agente desconectado',
     banner_on:    '● Agente conectado — ya puedes usar todas las secciones',
     banner_off:   '● Agente no iniciado — sigue los pasos de abajo para comenzar',
+    banner_status_on:  'Agente conectado',
+    banner_status_off: 'Agente no iniciado',
+    banner_desc_on:    'Todas las secciones están disponibles. El agente está leyendo el disco de tu Mac.',
+    banner_desc_off:   'Inicia el agente en tu Mac para habilitar el análisis de disco. Sigue los pasos de abajo.',
     prompt_msgs:  ['escanear', 'detectar basura', 'liberar espacio'],
     install_title:'Agente no detectado. Sigue estos pasos:',
     install_steps:[

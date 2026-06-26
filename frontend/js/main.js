@@ -94,11 +94,12 @@ function setStatus(connected) {
 
   // Welcome banner
   const banner = document.getElementById('agent-banner');
-  if (banner) {
-    banner.className = `agent-banner ${connected ? 'connected' : 'disconnected'}`;
-    document.getElementById('banner-label').textContent =
-      connected ? t('banner_on') : t('banner_off');
-  }
+  if (!banner) return;
+  banner.className = `agent-banner ${connected ? 'connected' : 'disconnected'}`;
+  const statusEl = document.getElementById('banner-status');
+  const descEl   = document.getElementById('banner-label');
+  if (statusEl) statusEl.textContent = connected ? t('banner_status_on')  : t('banner_status_off');
+  if (descEl)   descEl.textContent   = connected ? t('banner_desc_on')    : t('banner_desc_off');
 }
 
 function showRetryBtn() {
@@ -136,4 +137,5 @@ document.getElementById('btn-junk').addEventListener('click', () => {
 
 // ── Start ─────────────────────────────────────────────────
 applyLang();
+setStatus(false);
 connect();
