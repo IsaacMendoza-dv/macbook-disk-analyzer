@@ -1,20 +1,20 @@
 const { execFile } = require('child_process');
 
-// diskutil info / gives accurate APFS container stats on macOS
 module.exports = () => new Promise((resolve, reject) => {
   execFile('diskutil', ['info', '-plist', '/'], (err, stdout) => {
     if (err) return fallbackDf(resolve, reject);
     try {
-      // Parse the plist output — grab the numeric values with grep approach
-      const totalMatch = stdout.match(/<key>TotalSize<\/key>\s*<integer>(\d+)<\/integer>/);
-      const freeMatch  = stdout.match(/<key>FreeSpace<\/key>\s*<integer>(\d+)<\/integer>/) ||
-                         stdout.match(/<key>APFSContainerFree<\/key>\s*<integer>(\d+)<\/integer>/);
+      const get = (key) => {
+        const m = stdout.match(new RegExp(`<key>${key}<\\/key>\\s*<integer>(\\d+)<\\/integer>`));
+        return m ? parseInt(m[1]) : null;
+      };
 
-      if (!totalMatch || !freeMatch) return fallbackDf(resolve, reject);
+      const total = get('TotalSize');
+      const free  = get('APFSContainerFree') ?? get('FreeSpace');
 
-      const total = parseInt(totalMatch[1]);
-      const free  = parseInt(freeMatch[1]);
-      const used  = total - free;
+      if (!total || !free) return fallbackDf(resolve, reject);
+
+      const used = total - free;
       resolve({ total, used, free, percent: Math.round((used / total) * 100) });
     } catch {
       fallbackDf(resolve, reject);
@@ -22,7 +22,6 @@ module.exports = () => new Promise((resolve, reject) => {
   });
 });
 
-// Fallback: df -k for non-APFS or older macOS
 function fallbackDf(resolve, reject) {
   execFile('df', ['-k', '/'], (err, stdout) => {
     if (err) return reject(err);
