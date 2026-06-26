@@ -57,9 +57,9 @@ const LANG = {
     guide_setup_title: 'First-time setup',
     guide_steps: [
       { n:'1', title:'Install Node.js',     desc:'Required to run the local agent. Download the LTS version from <a href="https://nodejs.org" target="_blank">nodejs.org</a> and install it.' },
-      { n:'2', title:'Open Terminal',       desc:'Press <strong>⌘ Space</strong>, type <strong>Terminal</strong>, press Enter.' },
-      { n:'3', title:'Start the agent',     desc:'Copy and paste this into Terminal:<br><code>cd agent && npm install && node server.js</code><br>The first run will download dependencies (~2 MB). The second line starts the agent.' },
-      { n:'4', title:'Come back here',      desc:'Keep Terminal open in the background. The indicator above will turn green when the connection is live. If it stays red, refresh the page.' },
+      { n:'2', title:'Download the project', desc:'Open Terminal (⌘ Space → "Terminal") and run:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code><br>This creates a folder called <strong>macbook-disk-analyzer</strong> in your home directory.' },
+      { n:'3', title:'Start the agent',     desc:'Still in Terminal, run these two commands:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install && node server.js</code><br>The first run downloads dependencies (~2 MB). The second line starts the agent.' },
+      { n:'4', title:'Come back here',      desc:'Keep Terminal open in the background. The indicator above will turn green when connected. Refresh this page if needed.' },
     ],
     guide_sections_title: 'What each section does',
     guide_sections: [
@@ -128,9 +128,9 @@ const LANG = {
     guide_setup_title: 'Configuración inicial',
     guide_steps: [
       { n:'1', title:'Instala Node.js',      desc:'Necesario para correr el agente. Descarga la versión LTS en <a href="https://nodejs.org" target="_blank">nodejs.org</a> e instálala.' },
-      { n:'2', title:'Abre Terminal',         desc:'Presiona <strong>⌘ Espacio</strong>, escribe <strong>Terminal</strong> y presiona Enter.' },
-      { n:'3', title:'Inicia el agente',      desc:'Copia y pega esto en Terminal:<br><code>cd agent && npm install && node server.js</code><br>La primera ejecución descarga dependencias (~2 MB). La segunda línea inicia el agente.' },
-      { n:'4', title:'Vuelve aquí',           desc:'Deja Terminal abierto en segundo plano. El indicador de arriba se pondrá verde cuando la conexión esté activa. Si sigue rojo, recarga la página.' },
+      { n:'2', title:'Descarga el proyecto',  desc:'Abre Terminal (⌘ Espacio → "Terminal") y ejecuta:<br><code>git clone https://github.com/IsaacMendoza-dv/macbook-disk-analyzer.git</code><br>Esto crea una carpeta llamada <strong>macbook-disk-analyzer</strong> en tu directorio home.' },
+      { n:'3', title:'Inicia el agente',      desc:'En la misma Terminal, ejecuta estos dos comandos:<br><code>cd macbook-disk-analyzer/agent</code><br><code>npm install && node server.js</code><br>La primera ejecución descarga dependencias (~2 MB). La segunda línea inicia el agente.' },
+      { n:'4', title:'Vuelve aquí',           desc:'Deja Terminal abierto en segundo plano. El indicador de arriba se pondrá verde cuando esté conectado. Recarga la página si es necesario.' },
     ],
     guide_sections_title: 'Qué hace cada sección',
     guide_sections: [
