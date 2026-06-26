@@ -3,12 +3,14 @@ const readline  = require('readline');
 const os        = require('os');
 const path      = require('path');
 
-const EXCLUDE = ['macbook-disk-analyzer', 'node_modules', '.Trash'];
+const EXCLUDE = ['macbook-disk-analyzer', '.Trash'];
 
 module.exports = (targetPath, onEntry) => new Promise((resolve) => {
   const root = targetPath || os.homedir();
 
-  const du = spawn('du', ['-sk', '-d', '2', root], {
+  // -k: 1024-byte blocks  -d 2: max depth 2
+  // NOTE: do NOT combine -s with -d — they are mutually exclusive on macOS
+  const du = spawn('du', ['-k', '-d', '2', root], {
     stdio: ['ignore', 'pipe', 'ignore']
   });
 
@@ -17,15 +19,11 @@ module.exports = (targetPath, onEntry) => new Promise((resolve) => {
   rl.on('line', (line) => {
     const tabIdx = line.indexOf('\t');
     if (tabIdx === -1) return;
-    const sizeStr = line.slice(0, tabIdx);
-    const p       = line.slice(tabIdx + 1).trim();
-    const size    = parseInt(sizeStr) * 1024;
+    const size = parseInt(line.slice(0, tabIdx)) * 1024;
+    const p    = line.slice(tabIdx + 1).trim();
 
     if (!p || p === root || isNaN(size)) return;
-
-    // Skip the app itself and node_modules to avoid noise
-    const base = path.basename(p);
-    if (EXCLUDE.some(ex => base === ex)) return;
+    if (EXCLUDE.some(ex => path.basename(p) === ex)) return;
 
     onEntry({ path: p, size });
   });
